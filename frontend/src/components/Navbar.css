@@ -37,3 +37,13 @@ a{
     transform: translateY(-5px);
     box-shadow: 0 10px 20px -10px rgba(219,24,44,0.6);
 }
+.material-symbols-outlined {
+    font-size: 24px;
+    vertical-align: middle;
+  }
+  
+  .nav-menu li {
+    display: flex;
+    align-items: center;
+    padding: 0 10px;
+  }

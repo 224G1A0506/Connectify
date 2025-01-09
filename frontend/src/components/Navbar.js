@@ -6,22 +6,28 @@ import { LoginContext } from "../context/LoginContext";
 
 export default function Navbar({ login }) {
   const { setModalOpen } = useContext(LoginContext);
+
+  // Add this in the head of your HTML file or in your main layout component
+  // <link href="https://fonts.googleapis.com/icon?family=Material+Symbols+Outlined" rel="stylesheet" />
+
   const loginStatus = () => {
     const token = localStorage.getItem("jwt");
     if (login || token) {
       return [
         <>
           <Link to="/profile">
-            <li>Profile</li>
+            <li><span className="material-symbols-outlined">account_circle</span></li>
           </Link>
-          <Link to="/createPost">Create Post</Link>
-          <Link style={{ marginLeft: "20px" }} to="/followingpost">
-            My Following
+          <Link to="/createPost">
+            <li><span className="material-symbols-outlined">add_box</span></li>
+          </Link>
+          <Link to="/followingpost">
+            <li><span className="material-symbols-outlined">explore</span></li>
           </Link>
           <Link to={""}>
-            <button className="primaryBtn" onClick={() => setModalOpen(true)}>
-              Log Out
-            </button>
+            <li onClick={() => setModalOpen(true)}>
+              <span className="material-symbols-outlined">logout</span>
+            </li>
           </Link>
         </>,
       ];
@@ -29,10 +35,10 @@ export default function Navbar({ login }) {
       return [
         <>
           <Link to="/signup">
-            <li>SignUp</li>
+            <li><span className="material-symbols-outlined">person_add</span></li>
           </Link>
           <Link to="/signin">
-            <li>SignIn</li>
+            <li><span className="material-symbols-outlined">login</span></li>
           </Link>
         </>,
       ];
@@ -41,7 +47,9 @@ export default function Navbar({ login }) {
 
   return (
     <div className="navbar">
-      <img src={logo} alt="" />
+      <Link to="/">
+        <img src={logo} alt="logo" />
+      </Link>
       <ul className="nav-menu">{loginStatus()}</ul>
     </div>
   );
