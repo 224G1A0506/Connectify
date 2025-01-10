@@ -5,6 +5,27 @@ const POST = mongoose.model("POST");
 const USER = mongoose.model("USER");
 const requireLogin = require("../middlewares/requireLogin");
 
+router.get("/search", requireLogin, async (req, res) => {
+    const query = req.query.q;
+    if (!query) {
+        return res.status(400).json({ error: "Search query is required" });
+    }
+
+    try {
+        const users = await USER.find({
+            $or: [
+                { name: { $regex: query, $options: "i" } },
+                { email: { $regex: query, $options: "i" } }
+            ]
+        }).select("_id name email Photo");
+
+        res.status(200).json(users);
+    } catch (err) {
+        res.status(500).json({ error: "Failed to fetch users" });
+    }
+});
+
+
 // to get user profile
 router.get("/user/:id", async (req, res) => {
     try {

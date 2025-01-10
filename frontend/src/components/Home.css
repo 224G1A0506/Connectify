@@ -4,7 +4,7 @@
     margin: 25px auto;
     border: 1px solid rgb(173, 173, 173);
     border-radius: 5px;
-    background: linear-gradient(135deg,#81b3ed,#2a4858);
+    background: linear-gradient(135deg,#eef3f8,#2a4858);
     overflow: hidden;
     box-shadow: 0 4px 10px rgba(0,0,0,0.2);
 }
@@ -12,7 +12,7 @@
 .card-header{
     display: flex;
     align-items: center;
-    background: #91dbf4;
+    background: #f7fbfc;
     padding: 10px;
     border-radius:10px 10px 0 0;
     font-weight:bold;
@@ -52,7 +52,7 @@
 .add-comment input{
     margin: 0;
     outline: none;
-    border: 2px solid #66a6ff;
+    border: 2px solid #e6ebf3;
     padding: 10px;
 }
 
@@ -71,7 +71,7 @@
   'FILL' 1,
   'wght' 700,
   'GRAD' 0,
-  'opsz' 48
+  'opsz' 48;
 }
 .material-symbols-outlined{
     cursor: pointer;

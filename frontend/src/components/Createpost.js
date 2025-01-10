@@ -5,20 +5,32 @@ import { useNavigate } from "react-router-dom";
 
 export default function Createpost() {
   const [body, setBody] = useState("");
-  const [image, setImage] = useState("")
-  const [url, setUrl] = useState("")
-  const navigate = useNavigate()
+  const [image, setImage] = useState("");
+  const [url, setUrl] = useState("");
+  const [user, setUser] = useState(null);
+  const navigate = useNavigate();
 
   // Toast functions
-  const notifyA = (msg) => toast.error(msg)
-  const notifyB = (msg) => toast.success(msg)
+  const notifyA = (msg) => toast.error(msg);
+  const notifyB = (msg) => toast.success(msg);
 
+  // Fetch current user details when component mounts
+  useEffect(() => {
+    fetch("/currentUser", {
+      headers: {
+        "Authorization": "Bearer " + localStorage.getItem("jwt")
+      }
+    })
+      .then(res => res.json())
+      .then(result => {
+        setUser(result);
+      })
+      .catch(err => console.log(err));
+  }, []);
 
   useEffect(() => {
-
     // saving post to mongodb
     if (url) {
-
       fetch("/createPost", {
         method: "post",
         headers: {
@@ -32,36 +44,30 @@ export default function Createpost() {
       }).then(res => res.json())
         .then(data => {
           if (data.error) {
-            notifyA(data.error)
+            notifyA(data.error);
           } else {
-            notifyB("Successfully Posted")
-            navigate("/")
+            notifyB("Successfully Posted");
+            navigate("/");
           }
         })
-        .catch(err => console.log(err))
+        .catch(err => console.log(err));
     }
-
-  }, [url])
-
+  }, [url]);
 
   // posting image to cloudinary
   const postDetails = () => {
-
-    console.log(body, image)
-    const data = new FormData()
-    data.append("file", image)
-    data.append("upload_preset", "insta-clone")
-    data.append("cloud_name", "cantacloud2")
+    console.log(body, image);
+    const data = new FormData();
+    data.append("file", image);
+    data.append("upload_preset", "insta-clone");
+    data.append("cloud_name", "cantacloud2");
     fetch("https://api.cloudinary.com/v1_1/cantacloud9/image/upload", {
       method: "post",
       body: data
     }).then(res => res.json())
       .then(data => setUrl(data.url))
-      .catch(err => console.log(err))
-    console.log(url)
-
-  }
-
+      .catch(err => console.log(err));
+  };
 
   const loadfile = (event) => {
     var output = document.getElementById("output");
@@ -70,9 +76,10 @@ export default function Createpost() {
       URL.revokeObjectURL(output.src); // free memory
     };
   };
+
   return (
     <div className="createPost">
-      {/* //header */}
+      {/* header */}
       <div className="post-header">
         <h4 style={{ margin: "3px auto" }}>Create New Post</h4>
         <button id="post-btn" onClick={() => { postDetails() }}>Share</button>
@@ -88,7 +95,7 @@ export default function Createpost() {
           accept="image/*"
           onChange={(event) => {
             loadfile(event);
-            setImage(event.target.files[0])
+            setImage(event.target.files[0]);
           }}
         />
       </div>
@@ -97,15 +104,20 @@ export default function Createpost() {
         <div className="card-header">
           <div className="card-pic">
             <img
-              src="https://images.unsplash.com/photo-1570295999919-56ceb5ecca61?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxzZWFyY2h8MXx8cGVyc29ufGVufDB8MnwwfHw%3D&auto=format&fit=crop&w=500&q=60"
+              src={user?.pic || "https://images.unsplash.com/photo-1570295999919-56ceb5ecca61?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxzZWFyY2h8MXx8cGVyc29ufGVufDB8MnwwfHw%3D&auto=format&fit=crop&w=500&q=60"}
               alt=""
             />
           </div>
-          <h5>Ramesh</h5>
+          <h5>{user?.name || "Loading..."}</h5>
         </div>
-        <textarea value={body} onChange={(e) => {
-          setBody(e.target.value)
-        }} type="text" placeholder="Write a caption...."></textarea>
+        <textarea 
+          value={body} 
+          onChange={(e) => {
+            setBody(e.target.value);
+          }} 
+          type="text" 
+          placeholder="Write a caption...."
+        ></textarea>
       </div>
     </div>
   );
