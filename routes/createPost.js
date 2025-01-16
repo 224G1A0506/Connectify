@@ -3,7 +3,7 @@ const router = express.Router();
 const mongoose = require("mongoose");
 const requireLogin = require("../middlewares/requireLogin");
 const POST = mongoose.model("POST");
-
+const USER = mongoose.model("USER"); // Add this line at the top with other imports
 // Route to fetch all posts
 router.get("/allposts", requireLogin, async (req, res) => {
     try {
@@ -135,6 +135,56 @@ router.get("/myfollwingpost", requireLogin, async (req, res) => {
     } catch (err) {
         console.error(err);
         res.status(500).json({ error: "Failed to fetch posts" });
+    }
+});
+// Add these routes to your auth.js or create a new route file
+// Get followers list with better error handling
+router.get("/user/:id/followers", requireLogin, async (req, res) => {
+    try {
+        const user = await USER.findById(req.params.id)
+            .populate("followers", "_id name userName Photo")
+            .select("followers");
+
+        if (!user) {
+            return res.status(404).json({ error: "User not found" });
+        }
+
+        const followers = user.followers || [];
+        res.json({ 
+            followers,
+            count: followers.length 
+        });
+    } catch (error) {
+        console.error("Error fetching followers:", error);
+        res.status(500).json({ 
+            error: "Error fetching followers",
+            details: error.message 
+        });
+    }
+});
+
+// Get following list with better error handling
+router.get("/user/:id/following", requireLogin, async (req, res) => {
+    try {
+        const user = await USER.findById(req.params.id)
+            .populate("following", "_id name userName Photo")
+            .select("following");
+
+        if (!user) {
+            return res.status(404).json({ error: "User not found" });
+        }
+
+        const following = user.following || [];
+        res.json({ 
+            following,
+            count: following.length 
+        });
+    } catch (error) {
+        console.error("Error fetching following:", error);
+        res.status(500).json({ 
+            error: "Error fetching following",
+            details: error.message 
+        });
     }
 });
 

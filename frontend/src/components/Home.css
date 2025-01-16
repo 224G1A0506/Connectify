@@ -1,141 +1,624 @@
-.card{
+/* Homepage Container */
+.home {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+/* Card Styling */
+.card {
     max-width: 500px;
     height: max-content;
     margin: 25px auto;
-    border: 1px solid rgb(173, 173, 173);
-    border-radius: 5px;
-    background: linear-gradient(135deg,#eef3f8,#2a4858);
+    border: none;
+    border-radius: 15px;
+    background: linear-gradient(135deg, rgb(238, 243, 248), rgb(42, 72, 88));
     overflow: hidden;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
-.card-header{
+.card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
+}
+
+/* Card Header */
+.card-header {
     display: flex;
     align-items: center;
-    background: #f7fbfc;
-    padding: 10px;
-    border-radius:10px 10px 0 0;
-    font-weight:bold;
+    background: linear-gradient(to right, #f7fbfc, #e3f2fd);
+    padding: 15px;
+    border-radius: 15px 15px 0 0;
 }
 
-.card-header > h5{
+.card-header > h5 {
     margin: 0;
     padding: 11px;
+    font-weight: 600;
+    color: #2a4858;
 }
 
-.card-pic img{
-    width: 30px;
-    border-radius: 30px;
-    height: auto;
-    object-fit: contain;
-    padding: 5px;
+.card-header > h5 a {
+    color: #2a4858;
+    text-decoration: none;
+    transition: color 0.3s ease;
 }
 
-.card-image img{
-    width: 100%;
-}
-
-.card-content{
-    text-align: left;
-    line-height: 4px;
-    padding: 3px 10px;
-    border-bottom: 1px solid rgb(173, 173, 173);
-    background: rgba(255,255,255,0.9);
-    border-radius:0 0 10px 10px;
-}
-
-.add-comment{
-    display: flex;
-    align-items: center;
-}
-
-.add-comment input{
-    margin: 0;
-    outline: none;
-    border: 2px solid #e6ebf3;
-    padding: 10px;
-}
-
-.comment{
-    border: none;
-    background-color: none;
-    font-weight: bolder;
-    cursor: pointer;
+.card-header > h5 a:hover {
     color: #339ce3;
 }
 
+/* Profile Picture */
+.card-pic img {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid #fff;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Main Post Image */
+.card-image {
+    position: relative;
+    background: #000;
+}
+
+.card-image img {
+    width: 100%;
+    max-height: 600px;
+    object-fit: contain;
+    display: block;
+}
+
+/* Content Area */
+.card-content {
+    text-align: left;
+    line-height: 1.5;
+    padding: 15px;
+    background: #fff;
+}
+
+/* Like Button and Animation */
+.interaction-buttons {
+    text-align: left;
+    padding: 5px 0;
+}
+
+.material-symbols-outlined {
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    font-size: 28px;
+    color: #666;
+}
+
+.material-symbols-outlined:hover {
+    transform: scale(1.2);
+}
 
 .material-symbols-outlined-red {
-    color: red;
-  font-variation-settings:
-  'FILL' 1,
-  'wght' 700,
-  'GRAD' 0,
-  'opsz' 48;
-}
-.material-symbols-outlined{
-    cursor: pointer;
+    color: #ff3366;
+    animation: likeAnimationBurst 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
 }
 
-.showComment{
+@keyframes likeAnimationBurst {
+    0% {
+        transform: scale(1);
+        text-shadow: 0 0 0 rgba(255, 51, 102, 0);
+    }
+    30% {
+        transform: scale(1.5);
+        text-shadow: 0 0 20px rgba(255, 51, 102, 0.5);
+    }
+    50% {
+        transform: scale(0.9);
+        text-shadow: 0 0 40px rgba(255, 51, 102, 0.8);
+    }
+    70% {
+        transform: scale(1.1);
+        text-shadow: 0 0 30px rgba(255, 51, 102, 0.6);
+    }
+    100% {
+        transform: scale(1);
+        text-shadow: 0 0 15px rgba(255, 51, 102, 0.4);
+    }
+}
+
+/* Text Styles */
+.likes-count {
+    font-weight: 600;
+    color: #2c3e50;
+    margin: 8px 0;
+    font-size: 0.95rem;
+}
+
+.post-body {
+    color: #2c3e50;
+    margin: 10px 0;
+    font-size: 0.95rem;
+    line-height: 1.5;
+}
+
+/* Comment Section */
+.add-comment {
+    display: flex;
+    align-items: center;
+    padding: 10px 15px;
+    background: #fff;
+    border-top: 1px solid #eee;
+}
+
+.add-comment input {
+    flex: 1;
+    margin: 0 10px;
+    outline: none;
+    border: none;
+    border-bottom: 2px solid #e6ebf3;
+    padding: 8px 15px;
+    font-size: 0.9rem;
+    transition: border-color 0.3s ease;
+    background: transparent;
+}
+
+.add-comment input:focus {
+    border-color: #339ce3;
+}
+
+/* Comment Button */
+.comment {
+    border: none;
+    background: none;
+    font-weight: 600;
+    cursor: pointer;
+    color: #339ce3;
+    padding: 8px 15px;
+    transition: all 0.3s ease;
+}
+
+.comment:hover {
+    color: #2980b9;
+    transform: translateY(-1px);
+}
+
+/* Comment Modal */
+.showComment {
     width: 100vw;
-    min-height:100vh ;
+    height: 100vh;
     position: fixed;
     top: 0;
     left: 0;
-    background-color: rgba(16, 13, 13, 0.4);
-    
-}
-
-.container{
+    background-color: rgba(0, 0, 0, 0.85);
+    z-index: 1000;
     display: flex;
-    width: 80%;
-    background-color: white;
-    position: absolute;
-    top: 10%;
-    left: 10%;
-    height: 500px;
+    justify-content: center;
+    align-items: center;
+    animation: fadeIn 0.3s ease;
 }
 
-.postPic{
-    background-color: black;
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+.container {
+    display: flex;
+    width: 90%;
+    max-width: 1200px;
+    background-color: white;
+    height: 80vh;
+    border-radius: 15px;
+    overflow: hidden;
+    position: relative;
+}
+
+.postPic {
+    flex: 1;
+    background-color: #000;
     display: flex;
     align-items: center;
+    justify-content: center;
 }
 
-.postPic img{
+.postPic img {
+    max-width: 100%;
+    max-height: 100%;
     object-fit: contain;
-    width: 100%;
 }
 
-.details{
-    width: 100%;
-    height: inherit;
+.details {
+    flex: 1;
     display: flex;
     flex-direction: column;
+    max-width: 500px;
 }
 
-.comment-section{
-    flex-grow: 4;
-    text-align: left;
-    margin-left: 10px;
+/* Comment List */
+.comment-section {
+    flex-grow: 1;
+    overflow-y: auto;
+    padding: 15px;
+    background: #fff;
 }
 
-.close-comment{
+.comm {
+    margin: 10px 0;
+    line-height: 1.4;
+}
+
+.commenter {
+    font-weight: 600;
+    color: #2c3e50;
+    margin-right: 8px;
+}
+
+.commentText {
+    color: #34495e;
+}
+
+/* Close Button */
+.close-comment {
     position: fixed;
-    top: 1%;
-    right: 5%;
-    color: white;
+    top: 20px;
+    right: 20px;
+    background: none;
     border: none;
     cursor: pointer;
+    transition: transform 0.3s ease;
+    padding: 10px;
 }
 
+.close-comment:hover {
+    transform: rotate(90deg);
+}
 
 .material-symbols-outlined-comment {
-    font-size: 50px;
-  font-variation-settings:
-  'FILL' 0,
-  'wght' 700,
-  'GRAD' 0,
-  'opsz' 48
+    font-size: 40px;
+    color: white;
 }
+
+/* Loading States */
+.loading-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 50vh;
+    color: #2c3e50;
+}
+
+.loading-spinner {
+    width: 40px;
+    height: 40px;
+    border: 3px solid #f3f3f3;
+    border-top: 3px solid #339ce3;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin-bottom: 15px;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* View Comments Button */
+.view-comments-btn {
+    border: none;
+    background: none;
+    color: #666;
+    font-size: 0.9rem;
+    cursor: pointer;
+    padding: 5px 0;
+    margin: 5px 0;
+    transition: color 0.3s ease;
+}
+
+.view-comments-btn:hover {
+    color: #339ce3;
+}
+
+/* Media Queries for Responsiveness */
+@media (max-width: 768px) {
+    .container {
+        flex-direction: column;
+        width: 95%;
+        height: 90vh;
+    }
+
+    .postPic {
+        height: 50%;
+    }
+
+    .details {
+        height: 50%;
+        max-width: 100%;
+    }
+
+    .card {
+        margin: 15px auto;
+    }
+}
+
+@media (max-width: 480px) {
+    .card-header {
+        padding: 10px;
+    }
+
+    .add-comment input {
+        padding: 8px;
+    }
+
+    .card-content {
+        padding: 10px;
+    }
+}
+/* Existing styles remain, adding new styles for enhanced comments */
+
+/* Enhanced Comment Input */
+.add-comment {
+    background: rgba(0, 0, 0, 0.8);
+    border-top: 1px solid #2a2a2a;
+    position: relative;
+    overflow: hidden;
+}
+
+.add-comment::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 3px;
+    background: linear-gradient(90deg, transparent, #ff00ff, #00ff00, #00ffff);
+    animation: neonBorder 3s linear infinite;
+}
+
+@keyframes neonBorder {
+    0% { left: -100%; }
+    100% { left: 100%; }
+}
+
+.add-comment input {
+    background: rgba(255, 255, 255, 0.1);
+    color: #fff;
+    border: none;
+    border-radius: 20px;
+    padding: 12px 20px;
+    font-size: 1rem;
+    box-shadow: 0 0 15px rgba(0, 255, 255, 0.2);
+    transition: all 0.3s ease;
+}
+
+.add-comment input:focus {
+    background: rgba(255, 255, 255, 0.15);
+    box-shadow: 0 0 20px rgba(0, 255, 255, 0.4),
+                inset 0 0 10px rgba(0, 255, 255, 0.2);
+    transform: translateY(-1px);
+}
+
+.add-comment input::placeholder {
+    color: rgba(255, 255, 255, 0.6);
+}
+
+/* Enhanced Comment Button */
+.comment {
+    background: linear-gradient(45deg, #ff00ff, #00ffff);
+    color: white;
+    padding: 8px 20px;
+    border-radius: 20px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    position: relative;
+    overflow: hidden;
+    transition: all 0.3s ease;
+    box-shadow: 0 0 10px rgba(0, 255, 255, 0.3);
+}
+
+.comment:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 0 20px rgba(0, 255, 255, 0.5),
+                0 0 40px rgba(255, 0, 255, 0.3);
+}
+
+.comment:active {
+    transform: translateY(1px);
+}
+
+/* Neon Text Effect for Comments */
+.commentText {
+    color: #fff;
+    text-shadow: 0 0 5px rgba(255, 255, 255, 0.5),
+                 0 0 10px rgba(0, 255, 255, 0.3);
+    transition: all 0.3s ease;
+}
+
+.comm:hover .commentText {
+    text-shadow: 0 0 8px rgba(255, 255, 255, 0.7),
+                 0 0 15px rgba(0, 255, 255, 0.5);
+}
+
+/* Comment Section Enhancement */
+.comment-section {
+    background: rgba(0, 0, 0, 0.9);
+    border-radius: 10px;
+    margin: 10px;
+    padding: 20px;
+    box-shadow: inset 0 0 20px rgba(0, 255, 255, 0.2);
+}
+
+.comm {
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 10px;
+    padding: 12px;
+    margin: 10px 0;
+    transition: all 0.3s ease;
+    border-left: 3px solid transparent;
+    animation: commentFadeIn 0.5s ease forwards;
+}
+
+@keyframes commentFadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.comm:hover {
+    background: rgba(255, 255, 255, 0.1);
+    border-left: 3px solid #00ffff;
+    box-shadow: 0 0 15px rgba(0, 255, 255, 0.2);
+}
+
+/* Emoji Icon Enhancement */
+.material-symbols-outlined {
+    color: #00ffff;
+    text-shadow: 0 0 10px rgba(0, 255, 255, 0.5);
+    animation: emojiPulse 2s infinite;
+}
+
+@keyframes emojiPulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.1); }
+    100% { transform: scale(1); }
+}
+/* Add these styles to your Home.css file */
+
+.loading {
+    text-align: center;
+    padding: 20px;
+    font-size: 18px;
+    color: #666;
+  }
+  
+  .card-header {
+    display: flex;
+    align-items: center;
+    padding: 10px;
+  }
+  
+  .user-info {
+    margin-left: 10px;
+  }
+  
+  .post-time {
+    font-size: 12px;
+    color: #666;
+  }
+  
+  .card-pic img {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    object-fit: cover;
+  }
+  
+  .comment-pic {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    object-fit: cover;
+    margin-right: 8px;
+    vertical-align: middle;
+  }
+  
+  .comment-time {
+    font-size: 11px;
+    color: #666;
+    margin-left: 8px;
+  }
+  
+  .commenter {
+    display: flex;
+    align-items: center;
+    margin-bottom: 5px;
+  }
+  
+  .commentText {
+    margin-left: 8px;
+  }
+  
+  .add-comment {
+    display: flex;
+    align-items: center;
+    padding: 10px;
+    border-top: 1px solid #dbdbdb;
+  }
+  
+  .add-comment input {
+    flex: 1;
+    border: none;
+    padding: 8px;
+    outline: none;
+  }
+  
+  .add-comment button {
+    border: none;
+    color: #0095f6;
+    font-weight: bold;
+    cursor: pointer;
+    padding: 8px;
+    background: none;
+  }
+  
+  .add-comment button:disabled {
+    opacity: 0.3;
+    cursor: default;
+  }
+  
+  .showComment {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.6);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+  }
+  
+  .showComment .container {
+    width: 90%;
+    max-width: 935px;
+    background: white;
+    border-radius: 4px;
+    overflow: hidden;
+    display: flex;
+  }
+  
+  .showComment .postPic {
+    width: 60%;
+  }
+  
+  .showComment .postPic img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  
+  .showComment .details {
+    width: 40%;
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .close-comment {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    color: white;
+    cursor: pointer;
+  }
+  
+  .comment-section {
+    flex: 1;
+    overflow-y: auto;
+    padding: 16px;
+  }

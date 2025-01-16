@@ -16,7 +16,8 @@
     "express": "^4.21.2",
     "google-auth-library": "^9.15.0",
     "jsonwebtoken": "^9.0.2",
-    "mongoose": "^8.9.3",
-    "nodemon": "^3.1.9"
+    "mongoose": "^8.9.4",
+    "nodemon": "^3.1.9",
+    "socket.io": "^4.8.1"
   }
 }

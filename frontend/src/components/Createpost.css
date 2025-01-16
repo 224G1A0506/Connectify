@@ -1,66 +1,77 @@
 .createPost{
-    max-width: 500px;
-    margin: 10px auto;
-    border: 1px solid rgb(173, 173, 173);
-    border-radius: 5px;
+  max-width: 500px;
+  margin: 10px auto;
+  border: 1px solid rgb(173, 173, 173);
+  border-radius: 5px;
 }
 
 .main-div{
-    border-top: 1px solid rgb(173, 173, 173) ;
+  border-top: 1px solid rgb(173, 173, 173) ;
 }
 /* General Dark Mode Styles */
 body.dark-mode {
-    background-color: #121212;
-    color: #ffffff;
-  }
-  
-  .hero-section.dark-mode {
-    background-color: #1d1d1d;
-  }
-  
-  /* Example for text elements */
-  p, h1, h2, h3, h4 {
-    color: #ffffff;
-  }
-  
-  /* Dark Mode for Forms */
-  input, textarea {
-    background-color: #333;
-    color: #fff;
-    border: 1px solid #555;
-  }
-  
-  button {
-    background-color: #444;
-    color: #fff;
-    border: none;
-  }
-  
+  background-color: #121212;
+  color: #ffffff;
+}
+
+.hero-section.dark-mode {
+  background-color: #1d1d1d;
+}
+
+/* Example for text elements */
+p, h1, h2, h3, h4 {
+  color: #ffffff;
+}
+
+/* Dark Mode for Forms */
+input, textarea {
+  background-color: #333;
+  color: #fff;
+  border: 1px solid #555;
+}
+
+button {
+  background-color: #444;
+  color: #fff;
+  border: none;
+}
+
 .post-header{
-    display: flex;
+  display: flex;
 }
 
 #post-btn{
-    border: none;
-    color: #339ce3;
-    background:none;
-    font-weight: bolder;
-    cursor: pointer;
+  border: none;
+  color: #339ce3;
+  background:none;
+  font-weight: bolder;
+  cursor: pointer;
 }
 
 .details{
-    border-top: 1px solid rgb(173, 173, 173) ;
+  border-top: 1px solid rgb(173, 173, 173) ;
 }
 
 textarea{
-    width: 90%;
-    border: none;
-    outline: none;
+  width: 90%;
+  border: none;
+  outline: none;
 }
 
 #output{
-    width: 300px;
-    border: none;
-    outline: none;
-    margin-top: 5px;
+  width: 300px;
+  border: none;
+  outline: none;
+  margin-top: 5px;
+}
+.card-pic img {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.createPost button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
 }

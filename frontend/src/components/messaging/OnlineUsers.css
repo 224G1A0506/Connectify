@@ -1,0 +1,123 @@
+.online-users-container {
+    width: 280px;
+    border-left: 1px solid #dbdbdb;
+    background: white;
+    height: calc(100vh - 60px);
+    padding: 16px;
+    overflow-y: auto;
+  }
+  
+  .online-users-header {
+    padding-bottom: 16px;
+    border-bottom: 1px solid #dbdbdb;
+    margin-bottom: 16px;
+  }
+  
+  .online-users-title {
+    margin: 0;
+    font-size: 16px;
+    font-weight: 600;
+    color: #262626;
+  }
+  
+  .online-users-list {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+  
+  .online-user-item {
+    display: flex;
+    align-items: center;
+    padding: 8px;
+    text-decoration: none;
+    color: inherit;
+    border-radius: 8px;
+    transition: background-color 0.2s;
+  }
+  
+  .online-user-item:hover {
+    background-color: #fafafa;
+  }
+  
+  .online-user-avatar {
+    position: relative;
+    width: 40px;
+    height: 40px;
+    margin-right: 12px;
+  }
+  
+  .online-user-avatar img {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    object-fit: cover;
+  }
+  
+  .online-indicator {
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    width: 12px;
+    height: 12px;
+    background-color: #00ca4e;
+    border: 2px solid white;
+    border-radius: 50%;
+  }
+  
+  /* Typing indicator styles */
+  .typing-indicator {
+    padding: 8px 16px;
+    color: #8e8e8e;
+    font-size: 12px;
+    font-style: italic;
+  }
+  
+  /* Message status indicators */
+  .message-status-container {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    margin-top: 4px;
+  }
+  
+  .status-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background-color: #0095f6;
+  }
+  
+  /* Empty state styles */
+  .no-messages {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    color: #8e8e8e;
+    text-align: center;
+    padding: 20px;
+  }
+  
+  .no-messages img {
+    width: 64px;
+    height: 64px;
+    margin-bottom: 16px;
+    opacity: 0.5;
+  }
+  
+  /* Responsive styles */
+  @media (max-width: 768px) {
+    .chat-list-container {
+      max-width: 100%;
+    }
+  
+    .online-users-container {
+      display: none;
+    }
+  
+    .chat-window {
+      width: 100%;
+    }
+  }

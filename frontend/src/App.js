@@ -13,7 +13,9 @@ import Modal from "./components/Modal";
 import UserProfie from "./components/UserProfile";
 import MyFolliwngPost from "./components/MyFollowingPost";
 import SearchResults from "./components/SearchResults";
+import { ChatList, ChatWindow } from './components/messaging';
 import "./App.css"; // Make sure your CSS file is imported
+import { MessagingContainer } from './components/messaging';
 
 function App() {
   const [userLogin, setUserLogin] = useState(false);
@@ -54,9 +56,11 @@ function App() {
             <Route exact path="/profile" element={<Profie />} />
             <Route path="/createPost" element={<Createpost />} />
             <Route path="/profile/:userid" element={<UserProfie />} />
+            <Route path="/user/:userId" element={<UserProfie />} />
             <Route path="/followingpost" element={<MyFolliwngPost />} />
             <Route path="/user/:id" element={<UserProfie />} />
             <Route path="/search" element={<SearchResults />} />
+            <Route path="/messages/*" element={<MessagingContainer />} />
           </Routes>
           <ToastContainer theme="dark" />
           {modalOpen && <Modal setModalOpen={setModalOpen} />}

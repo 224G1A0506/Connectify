@@ -3,12 +3,14 @@ import PostDetail from "./PostDetail";
 import "./Profile.css";
 import { useParams } from "react-router-dom";
 
-export default function UserProfie() {
+export default function UserProfile() {
   var picLink = "https://cdn-icons-png.flaticon.com/128/3177/3177440.png";
-  const { userid } = useParams();
+  const { userId } = useParams(); // Changed from userid to userId to match route parameter
   const [isFollow, setIsFollow] = useState(false);
   const [user, setUser] = useState("");
   const [posts, setPosts] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   // to follow user
   const followUser = (userId) => {
@@ -22,10 +24,17 @@ export default function UserProfie() {
         followId: userId,
       }),
     })
-      .then((res) => res.json())
+      .then((res) => {
+        if (!res.ok) throw new Error("Failed to follow user");
+        return res.json();
+      })
       .then((data) => {
         console.log(data);
         setIsFollow(true);
+      })
+      .catch((err) => {
+        console.error(err);
+        setError("Failed to follow user. Please try again.");
       });
   };
 
@@ -42,34 +51,62 @@ export default function UserProfie() {
       }),
     })
       .then((res) => {
-        res.json();
+        if (!res.ok) throw new Error("Failed to unfollow user");
+        return res.json();
       })
       .then((data) => {
         console.log(data);
         setIsFollow(false);
+      })
+      .catch((err) => {
+        console.error(err);
+        setError("Failed to unfollow user. Please try again.");
       });
   };
 
   useEffect(() => {
-    fetch(`http://localhost:5000/user/${userid}`, {
+    setLoading(true);
+    setError(null);
+
+    if (!userId) {
+      setError("User ID is missing");
+      setLoading(false);
+      return;
+    }
+
+    fetch(`http://localhost:5000/user/${userId}`, {
       headers: {
         Authorization: "Bearer " + localStorage.getItem("jwt"),
       },
     })
-      .then((res) => res.json())
+      .then((res) => {
+        if (!res.ok) throw new Error("Failed to fetch user data");
+        return res.json();
+      })
       .then((result) => {
+        if (!result.user) throw new Error("User not found");
+        
         console.log(result);
         setUser(result.user);
-        setPosts(result.post);
-        if (
-          result.user.followers.includes(
-            JSON.parse(localStorage.getItem("user"))._id
-          )
-        ) {
+        setPosts(result.post || []);
+        
+        // Check if current user follows this profile
+        const currentUserId = JSON.parse(localStorage.getItem("user"))?._id;
+        if (currentUserId && result.user.followers?.includes(currentUserId)) {
           setIsFollow(true);
         }
+        setLoading(false);
+      })
+      .catch((err) => {
+        console.error(err);
+        setError(err.message || "Failed to load user profile");
+        setLoading(false);
       });
-  }, [isFollow]);
+  }, [userId, isFollow]);
+
+  if (loading) return <div className="profile">Loading...</div>;
+  if (error) return <div className="profile error">{error}</div>;
+  if (!user) return <div className="profile">User not found</div>;
 
   return (
     <div className="profile">
@@ -77,7 +114,10 @@ export default function UserProfie() {
       <div className="profile-frame">
         {/* profile-pic */}
         <div className="profile-pic">
-          <img src={user.Photo ? user.Photo : picLink} alt="" />
+          <img 
+            src={user.Photo ? user.Photo : picLink} 
+            alt={`${user.name}'s profile`} 
+          />
         </div>
         {/* profile-data */}
         <div className="pofile-data">
@@ -89,18 +129,20 @@ export default function UserProfie() {
             }}
           >
             <h1>{user.name}</h1>
-            <button
-              className="followBtn"
-              onClick={() => {
-                if (isFollow) {
-                  unfollowUser(user._id);
-                } else {
-                  followUser(user._id);
-                }
-              }}
-            >
-              {isFollow ? "Unfollow" : "Follow"}
-            </button>
+            {user._id !== JSON.parse(localStorage.getItem("user"))?._id && (
+              <button
+                className="followBtn"
+                onClick={() => {
+                  if (isFollow) {
+                    unfollowUser(user._id);
+                  } else {
+                    followUser(user._id);
+                  }
+                }}
+              >
+                {isFollow ? "Unfollow" : "Follow"}
+              </button>
+            )}
           </div>
           <div className="profile-info" style={{ display: "flex" }}>
             <p>{posts.length} posts</p>
@@ -112,7 +154,6 @@ export default function UserProfie() {
       <hr
         style={{
           width: "90%",
-
           opacity: "0.8",
           margin: "25px auto",
         }}
@@ -124,17 +165,15 @@ export default function UserProfie() {
             <img
               key={pics._id}
               src={pics.photo}
-              // onClick={() => {
-              //     toggleDetails(pics)
-              // }}
+              alt={pics.title || "Post image"}
               className="item"
-            ></img>
+            />
           );
         })}
       </div>
-      {/* {show &&
-        <PostDetail item={posts} toggleDetails={toggleDetails} />
-      } */}
+      {posts.length === 0 && (
+        <div className="no-posts">No posts yet</div>
+      )}
     </div>
   );
 }

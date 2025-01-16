@@ -1,0 +1,88 @@
+/* GoogleAuthButton.css */
+.google-auth-container {
+    margin: 20px 0;
+    position: relative;
+    width: 100%;
+}
+
+.google-divider {
+    display: flex;
+    align-items: center;
+    text-align: center;
+    margin: 20px 0;
+    color: #fff;
+    text-shadow: 0 0 5px rgba(255, 255, 255, 0.5);
+}
+
+.google-divider::before,
+.google-divider::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: linear-gradient(
+        90deg,
+        transparent,
+        rgba(255, 255, 255, 0.5),
+        transparent
+    );
+}
+
+.google-divider span {
+    padding: 0 10px;
+    font-size: 14px;
+    background: transparent;
+    position: relative;
+}
+
+.google-divider span::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 30px;
+    height: 30px;
+    background: rgba(0, 0, 0, 0.85);
+    z-index: -1;
+    border-radius: 50%;
+    box-shadow: 0 0 10px rgba(255, 0, 255, 0.3);
+}
+
+.google-button-wrapper {
+    display: flex;
+    justify-content: center;
+    margin: 10px 0;
+    position: relative;
+    z-index: 1;
+}
+
+/* Custom styling for Google button iframe */
+.google-button-wrapper iframe {
+    background: rgba(255, 255, 255, 0.1) !important;
+    border-radius: 8px !important;
+    transition: all 0.3s ease !important;
+    box-shadow: 
+        0 0 10px rgba(255, 0, 255, 0.2),
+        0 0 20px rgba(0, 255, 255, 0.1) !important;
+}
+
+.google-button-wrapper iframe:hover {
+    transform: translateY(-2px);
+    box-shadow: 
+        0 0 15px rgba(255, 0, 255, 0.3),
+        0 0 30px rgba(0, 255, 255, 0.2) !important;
+}
+
+/* Animation for loading state */
+@keyframes buttonGlow {
+    0%, 100% {
+        box-shadow: 0 0 5px rgba(255, 0, 255, 0.3);
+    }
+    50% {
+        box-shadow: 0 0 20px rgba(0, 255, 255, 0.5);
+    }
+}
+
+.google-button-wrapper.loading {
+    animation: buttonGlow 1.5s infinite;
+}

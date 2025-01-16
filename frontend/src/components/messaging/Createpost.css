@@ -1,0 +1,165 @@
+.createPost {
+  max-width: 500px;
+  margin: 20px auto;
+  background: rgba(23, 23, 23, 0.8);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 15px;
+  box-shadow: 0 0 20px rgba(51, 156, 227, 0.2);
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.createPost::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(51, 156, 227, 0.1),
+    transparent
+  );
+  animation: shine 3s infinite;
+}
+
+@keyframes shine {
+  to {
+    left: 100%;
+  }
+}
+
+.post-header {
+  display: flex;
+  padding: 15px;
+  background: rgba(0, 0, 0, 0.2);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+#post-btn {
+  border: none;
+  color: #339ce3;
+  background: transparent;
+  font-weight: bold;
+  cursor: pointer;
+  padding: 8px 15px;
+  border-radius: 8px;
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+#post-btn::after {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: radial-gradient(circle, rgba(51, 156, 227, 0.1) 0%, transparent 70%);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+#post-btn:hover::after {
+  opacity: 1;
+  animation: pulse 1.5s infinite;
+}
+
+@keyframes pulse {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+  100% { transform: scale(1); }
+}
+
+.main-div {
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+#output {
+  width: 300px;
+  height: 300px;
+  object-fit: cover;
+  border-radius: 10px;
+  transition: transform 0.3s ease;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+}
+
+#output:hover {
+  transform: scale(1.02);
+}
+
+.details {
+  padding: 20px;
+  background: rgba(0, 0, 0, 0.2);
+}
+
+.card-header {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  margin-bottom: 15px;
+}
+
+.card-pic {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  overflow: hidden;
+  border: 2px solid #339ce3;
+  animation: borderGlow 2s infinite;
+}
+
+@keyframes borderGlow {
+  0% { box-shadow: 0 0 5px #339ce3; }
+  50% { box-shadow: 0 0 15px #339ce3; }
+  100% { box-shadow: 0 0 5px #339ce3; }
+}
+
+.card-pic img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+textarea {
+  width: 100%;
+  min-height: 100px;
+  padding: 10px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+  color: #fff;
+  font-size: 14px;
+  resize: none;
+  transition: all 0.3s ease;
+}
+
+textarea:focus {
+  background: rgba(255, 255, 255, 0.1);
+  box-shadow: 0 0 10px rgba(51, 156, 227, 0.2);
+}
+
+input[type="file"] {
+  margin-top: 15px;
+  padding: 10px;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 8px;
+  color: #fff;
+  cursor: pointer;
+}
+
+/* Dark mode specific styles */
+body.dark-mode .createPost {
+  background: rgba(18, 18, 18, 0.95);
+}
+
+body.dark-mode textarea {
+  background: rgba(255, 255, 255, 0.02);
+}

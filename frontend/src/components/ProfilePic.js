@@ -113,6 +113,7 @@ export default function ProfilePic({ changeprofile }) {
               border: "none",
               cursor: "pointer",
               fontSize: "15px",
+              color:"white",
             }}
             onClick={changeprofile}
           >

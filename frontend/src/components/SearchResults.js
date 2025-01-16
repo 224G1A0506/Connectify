@@ -58,8 +58,8 @@ const SearchResults = () => {
                         <img src={user.Photo || "default-avatar.png"} alt={user.name} className="user-avatar" />
                         <div className="user-details">
                             <Link to={`/user/${user._id}`} className="user-name">
-                                {user.name}
-                            </Link>
+    {user.name}
+</Link>
                             <p className="user-email">{user.email}</p>
                         </div>
                     </li>
