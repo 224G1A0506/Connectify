@@ -131,12 +131,12 @@ export default function MyFolliwngPost() {
           <div className="card">
             {/* card header */}
             <div className="card-header">
-              <div className="card-pic">
-                <img
-                  src="https://images.unsplash.com/photo-1570295999919-56ceb5ecca61?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxzZWFyY2h8MXx8cGVyc29ufGVufDB8MnwwfHw%3D&auto=format&fit=crop&w=500&q=60"
-                  alt=""
-                />
-              </div>
+            <div className="card-pic">
+  <img
+    src={posts.postedBy.Photo || "defaultProfilePic.jpg"} // Use dynamic Photo with fallback
+    alt={`${posts.postedBy.name}'s profile`}
+  />
+</div>
               <h5>
                 <Link to={`/profile/${posts.postedBy._id}`}>
                   {posts.postedBy.name}
@@ -221,12 +221,12 @@ export default function MyFolliwngPost() {
                 className="card-header"
                 style={{ borderBottom: "1px solid #00000029" }}
               >
-                <div className="card-pic">
-                  <img
-                    src="https://images.unsplash.com/photo-1570295999919-56ceb5ecca61?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxzZWFyY2h8MXx8cGVyc29ufGVufDB8MnwwfHw%3D&auto=format&fit=crop&w=500&q=60"
-                    alt=""
-                  />
-                </div>
+               <div className="card-pic">
+  <img
+    src={item.postedBy.Photo || "defaultProfilePic.jpg"}
+    alt={`${item.postedBy.name}'s profile`}
+  />
+</div>
                 <h5>{item.postedBy.name}</h5>
               </div>
 

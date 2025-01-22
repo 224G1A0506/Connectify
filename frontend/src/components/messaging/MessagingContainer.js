@@ -67,7 +67,7 @@ const MessagingContainer = () => {
   if (!isAuthenticated) {
     return <Navigate to="/signin" replace />;
   }
-
+  
   return (
     <div className="messaging-container" style={{ display: 'flex', height: '100vh' }}>
       <ChatList />

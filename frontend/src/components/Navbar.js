@@ -5,9 +5,12 @@ import { LoginContext } from "../context/LoginContext";
 import "./Navbar.css";
 import logo from "../img/logo100 (3).png";
 import { MessageCircle } from 'lucide-react'; // Import the message icon
+import { useTheme } from '../context/ThemeContext';
 
 
-export default function Navbar({ login, toggleTheme, isDarkMode }) {
+
+export default function Navbar({ login }) {
+    const { isDarkMode, toggleTheme } = useTheme();
     const { setModalOpen } = useContext(LoginContext);
     const [searchQuery, setSearchQuery] = useState("");
     const [isVisible, setIsVisible] = useState(true);
@@ -74,7 +77,7 @@ export default function Navbar({ login, toggleTheme, isDarkMode }) {
                             logout
                         </span>
                     </Link>
-                    <Link to="/messages" className="nav-icon">
+                    <Link to="/messages" className="nav-icon" title="Messages">
   <MessageCircle size={24} />
 </Link>
                 </>
@@ -85,7 +88,7 @@ export default function Navbar({ login, toggleTheme, isDarkMode }) {
 
     return (
         <>
-            <div className={`navbar ${isDarkMode ? "dark-mode" : "light-mode"} ${isVisible ? "" : "navbar-hidden"}`}>
+             <div className={`navbar ${isDarkMode ? "dark-mode" : "light-mode"}`}>
                 <div className="navbar-content">
                     <Link to="/" className="logo-link">
                         <img src={logo} alt="logo" />

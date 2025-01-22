@@ -8,7 +8,7 @@ const USER = mongoose.model("USER"); // Add this line at the top with other impo
 router.get("/allposts", requireLogin, async (req, res) => {
     try {
         const posts = await POST.find()
-            .populate("postedBy", "_id name Photo")
+            .populate("postedBy", "_id name Photo") // Make sure this populate is working
             .populate("comments.postedBy", "_id name")
             .sort("-createdAt");
         res.json(posts);
@@ -17,7 +17,6 @@ router.get("/allposts", requireLogin, async (req, res) => {
         res.status(500).json({ error: "Failed to fetch posts" });
     }
 });
-
 // Route to create a post
 router.post("/createPost", requireLogin, async (req, res) => {
     const { body, pic } = req.body;
@@ -129,8 +128,9 @@ router.delete("/deletePost/:postId", requireLogin, async (req, res) => {
 router.get("/myfollwingpost", requireLogin, async (req, res) => {
     try {
         const posts = await POST.find({ postedBy: { $in: req.user.following } })
-            .populate("postedBy", "_id name")
-            .populate("comments.postedBy", "_id name");
+            .populate("postedBy", "_id name Photo") // Added Photo field
+            .populate("comments.postedBy", "_id name Photo")
+            .sort("-createdAt");  // Added sorting for newest posts first
         res.json(posts);
     } catch (err) {
         console.error(err);
@@ -184,6 +184,78 @@ router.get("/user/:id/following", requireLogin, async (req, res) => {
         res.status(500).json({ 
             error: "Error fetching following",
             details: error.message 
+        });
+    }
+});
+router.put("/follow", requireLogin, async (req, res) => {
+    try {
+        // Update the followed user's followers list
+        const followedUser = await USER.findByIdAndUpdate(
+            req.body.followId,
+            { $push: { followers: req.user._id } },
+            { new: true }
+        ).select("-password");
+
+        if (!followedUser) {
+            return res.status(404).json({ error: "User not found" });
+        }
+
+        // Update the current user's following list
+        const updatedUser = await USER.findByIdAndUpdate(
+            req.user._id,
+            { $push: { following: req.body.followId } },
+            { new: true }
+        ).select("-password");
+
+        res.json({
+            success: true,
+            user: updatedUser,
+            followUser: followedUser
+        });
+
+    } catch (error) {
+        console.error("Follow error:", error);
+        res.status(500).json({
+            success: false,
+            error: "Failed to follow user",
+            details: error.message
+        });
+    }
+});
+
+// Unfollow route
+router.put("/unfollow", requireLogin, async (req, res) => {
+    try {
+        // Update the unfollowed user's followers list
+        const unfollowedUser = await USER.findByIdAndUpdate(
+            req.body.unfollowId,
+            { $pull: { followers: req.user._id } },
+            { new: true }
+        ).select("-password");
+
+        if (!unfollowedUser) {
+            return res.status(404).json({ error: "User not found" });
+        }
+
+        // Update the current user's following list
+        const updatedUser = await USER.findByIdAndUpdate(
+            req.user._id,
+            { $pull: { following: req.body.unfollowId } },
+            { new: true }
+        ).select("-password");
+
+        res.json({
+            success: true,
+            user: updatedUser,
+            unfollowUser: unfollowedUser
+        });
+
+    } catch (error) {
+        console.error("Unfollow error:", error);
+        res.status(500).json({
+            success: false,
+            error: "Failed to unfollow user",
+            details: error.message
         });
     }
 });

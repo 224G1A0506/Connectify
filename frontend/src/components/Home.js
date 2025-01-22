@@ -1,8 +1,9 @@
 import React, { useEffect, useState, useCallback } from "react";
 import "./Home.css";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import { toast } from "react-toastify";
-import { Link } from "react-router-dom";
+import { useTheme } from '../context/ThemeContext';
+import EmojiCommentInput from './EmojiCommentInput';
 
 export default function Home() {
   const picLink = "https://cdn-icons-png.flaticon.com/128/3177/3177440.png";
@@ -13,8 +14,9 @@ export default function Home() {
   const [item, setItem] = useState(null);
   const [isLiking, setIsLiking] = useState({});
   const [loading, setLoading] = useState(true);
+  const [followLoading, setFollowLoading] = useState({});
+  const { isDarkMode } = useTheme();
 
-  // Get current user with error handling
   const getCurrentUser = useCallback(() => {
     try {
       const userString = localStorage.getItem("user");
@@ -26,38 +28,10 @@ export default function Home() {
     }
   }, []);
 
-  // Input animations effect
-  useEffect(() => {
-    const inputs = document.querySelectorAll('.add-comment input');
-    
-    const handleFocus = (e) => {
-      e.target.parentElement.style.transform = 'scale(1.02)';
-      e.target.parentElement.style.boxShadow = '0 0 20px rgba(0, 255, 255, 0.4)';
-    };
-    
-    const handleBlur = (e) => {
-      e.target.parentElement.style.transform = 'scale(1)';
-      e.target.parentElement.style.boxShadow = 'none';
-    };
-    
-    inputs.forEach(input => {
-      input.addEventListener('focus', handleFocus);
-      input.addEventListener('blur', handleBlur);
-    });
-    
-    return () => {
-      inputs.forEach(input => {
-        input.removeEventListener('focus', handleFocus);
-        input.removeEventListener('blur', handleBlur);
-      });
-    };
-  }, []);
-
-  // Fetch posts on component mount
   useEffect(() => {
     const token = localStorage.getItem("jwt");
     if (!token) {
-      navigate("./signup");
+      navigate("/signup");
       return;
     }
 
@@ -75,7 +49,6 @@ export default function Home() {
         }
 
         const result = await response.json();
-        console.log("Fetched posts:", result); // Debug log
         setData(result);
       } catch (err) {
         console.error("Error fetching posts:", err);
@@ -88,18 +61,96 @@ export default function Home() {
     fetchPosts();
   }, [navigate]);
 
-  // Handle profile navigation
-  const handleProfileClick = (userId) => {
-    if (!userId) {
-      console.error("User ID is missing");
-      toast.error("Unable to view profile");
-      return;
+  const followUser = async (userId) => {
+    if (followLoading[userId]) return;
+
+    try {
+      setFollowLoading(prev => ({ ...prev, [userId]: true }));
+      
+      const response = await fetch("/follow", {
+        method: "put",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: "Bearer " + localStorage.getItem("jwt"),
+        },
+        body: JSON.stringify({
+          followId: userId,
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      const result = await response.json();
+      
+      // Update local storage
+      localStorage.setItem("user", JSON.stringify(result.user));
+      
+      // Update posts data to reflect new following status
+      setData(prevData => 
+        prevData.map(post => ({
+          ...post,
+          postedBy: post.postedBy._id === userId 
+            ? { ...post.postedBy, followers: [...post.postedBy.followers || [], getCurrentUser()?._id] }
+            : post.postedBy
+        }))
+      );
+      
+      toast.success(`Following ${result.followUser.name}`);
+    } catch (error) {
+      console.error("Error following user:", error);
+      toast.error("Failed to follow user");
+    } finally {
+      setFollowLoading(prev => ({ ...prev, [userId]: false }));
     }
-    navigate(`/profile/${userId}`);
   };
 
+  const unfollowUser = async (userId) => {
+    if (followLoading[userId]) return;
 
-  // Enhanced like post function with animations
+    try {
+      setFollowLoading(prev => ({ ...prev, [userId]: true }));
+      
+      const response = await fetch("/unfollow", {
+        method: "put",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: "Bearer " + localStorage.getItem("jwt"),
+        },
+        body: JSON.stringify({
+          unfollowId: userId,
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      const result = await response.json();
+      
+      // Update local storage
+      localStorage.setItem("user", JSON.stringify(result.user));
+      
+      // Update posts data to reflect new following status
+      setData(prevData => 
+        prevData.map(post => ({
+          ...post,
+          postedBy: post.postedBy._id === userId 
+            ? { ...post.postedBy, followers: post.postedBy.followers?.filter(id => id !== getCurrentUser()?._id) }
+            : post.postedBy
+        }))
+      );
+      
+      toast.success(`Unfollowed ${result.unfollowUser.name}`);
+    } catch (error) {
+      console.error("Error unfollowing user:", error);
+      toast.error("Failed to unfollow user");
+    } finally {
+      setFollowLoading(prev => ({ ...prev, [userId]: false }));
+    }
+  };
+
   const likePost = async (id) => {
     if (isLiking[id]) return;
 
@@ -130,16 +181,9 @@ export default function Home() {
       setData(prevData => 
         prevData.map(posts => posts._id === result._id ? result : posts)
       );
-
     } catch (error) {
       console.error("Error in likePost:", error);
-      toast.error("Error liking post", {
-        style: {
-          background: "rgba(0, 0, 0, 0.9)",
-          color: "#fff",
-          boxShadow: "0 0 20px rgba(255, 0, 0, 0.3)",
-        }
-      });
+      toast.error("Error liking post");
     } finally {
       setTimeout(() => {
         const likeButton = document.querySelector(`#like-${id}`);
@@ -151,7 +195,6 @@ export default function Home() {
     }
   };
 
-  // Enhanced unlike post function
   const unlikePost = async (id) => {
     if (isLiking[id]) return;
 
@@ -182,13 +225,7 @@ export default function Home() {
       );
     } catch (error) {
       console.error("Error in unlikePost:", error);
-      toast.error("Error unliking post", {
-        style: {
-          background: "rgba(0, 0, 0, 0.9)",
-          color: "#fff",
-          boxShadow: "0 0 20px rgba(255, 0, 0, 0.3)",
-        }
-      });
+      toast.error("Error unliking post");
     } finally {
       setTimeout(() => {
         const likeButton = document.querySelector(`#like-${id}`);
@@ -200,29 +237,13 @@ export default function Home() {
     }
   };
 
-  // Enhanced makeComment function with animations
-  const makeComment = async (text, id) => {
+  const makeComment = async (text, postId) => {
     if (!text?.trim()) {
-      toast.error("Comment cannot be empty", {
-        position: "top-center",
-        style: {
-          background: "rgba(0, 0, 0, 0.9)",
-          color: "#fff",
-          boxShadow: "0 0 20px rgba(255, 0, 0, 0.3)",
-        }
-      });
+      toast.error("Comment cannot be empty");
       return;
     }
 
     try {
-      const commentSection = document.querySelector(".comment-section");
-      if (commentSection) {
-        commentSection.style.transform = "scale(0.98)";
-        setTimeout(() => {
-          commentSection.style.transform = "scale(1)";
-        }, 200);
-      }
-
       const response = await fetch("/comment", {
         method: "put",
         headers: {
@@ -231,7 +252,7 @@ export default function Home() {
         },
         body: JSON.stringify({
           text: text,
-          postId: id,
+          postId: postId,
         }),
       });
 
@@ -240,46 +261,18 @@ export default function Home() {
       }
 
       const result = await response.json();
-      
       setData(prevData => 
-        prevData.map(posts => {
-          if (posts._id === result._id) {
-            setTimeout(() => {
-              const newComment = document.querySelector(".comm:last-child");
-              if (newComment) {
-                newComment.style.animation = "commentFadeIn 0.5s ease forwards";
-              }
-            }, 0);
-            return result;
-          }
-          return posts;
-        })
+        prevData.map(posts => posts._id === result._id ? result : posts)
       );
-      
-      setComments(prev => ({ ...prev, [id]: "" }));
-      
-      toast.success("Comment posted! ✨", {
-        position: "top-center",
-        style: {
-          background: "rgba(0, 0, 0, 0.9)",
-          color: "#fff",
-          boxShadow: "0 0 20px rgba(0, 255, 255, 0.3)",
-        }
-      });
+      setComments(prev => ({ ...prev, [postId]: "" }));
+      toast.success("Comment posted!");
     } catch (error) {
       console.error("Error posting comment:", error);
-      toast.error("Error posting comment", {
-        style: {
-          background: "rgba(0, 0, 0, 0.9)",
-          color: "#fff",
-          boxShadow: "0 0 20px rgba(255, 0, 0, 0.3)",
-        }
-      });
+      toast.error("Error posting comment");
     }
   };
 
-  // Toggle comment section with animation
-  const toggleComment = useCallback((posts) => {
+  const toggleComment = useCallback((post) => {
     if (show) {
       document.querySelector('.showComment').style.opacity = '0';
       setTimeout(() => {
@@ -287,18 +280,10 @@ export default function Home() {
         setItem(null);
       }, 300);
     } else {
-      setItem(posts);
+      setItem(post);
       setShow(true);
     }
   }, [show]);
-
-  // Handle enter key press for comments
-  const handleKeyPress = (e, postId) => {
-    if (e.key === 'Enter' && !e.shiftKey) {
-      e.preventDefault();
-      makeComment(comments[postId], postId);
-    }
-  };
 
   if (loading) {
     return (
@@ -310,28 +295,45 @@ export default function Home() {
   }
 
   return (
-    <div className="home">
+    <div className={`home ${isDarkMode ? "dark-mode" : "light-mode"}`}>
       {data.map((posts) => (
         <div className="card" key={posts._id}>
-          {/* Card Header with Fixed Profile Link */}
           <div className="card-header">
             <div className="card-pic">
-              <img 
-                src={posts.postedBy?.Photo || picLink} 
-                alt="profile" 
-                onClick={() => handleProfileClick(posts.postedBy?._id)}
-                style={{ cursor: 'pointer' }}
-              />
+              <Link to={`/profile/${posts.postedBy?._id}`}>
+                <img 
+                  src={posts.postedBy?.Photo || picLink} 
+                  alt="profile pic"
+                />
+              </Link>
             </div>
-            <h5>
-              {posts.postedBy?._id ? (
-                <Link to={`/profile/${posts.postedBy._id}`}>
-                  {posts.postedBy.name}
+            <div className="card-header-info">
+              <h5>
+                <Link to={`/profile/${posts.postedBy?._id}`}>
+                  {posts.postedBy?.name || "Unknown User"}
                 </Link>
-              ) : (
-                <span>{posts.postedBy?.name || "Unknown User"}</span>
+              </h5>
+              {getCurrentUser()?._id !== posts.postedBy?._id && (
+                <button 
+                  className={`follow-button ${posts.postedBy?.followers?.includes(getCurrentUser()?._id) ? 'following' : ''}`}
+                  onClick={() => {
+                    const isFollowing = posts.postedBy?.followers?.includes(getCurrentUser()?._id);
+                    if (isFollowing) {
+                      unfollowUser(posts.postedBy?._id);
+                    } else {
+                      followUser(posts.postedBy?._id);
+                    }
+                  }}
+                  disabled={followLoading[posts.postedBy?._id]}
+                >
+                  {followLoading[posts.postedBy?._id] 
+                    ? 'Loading...'
+                    : posts.postedBy?.followers?.includes(getCurrentUser()?._id)
+                      ? 'Following'
+                      : 'Follow'}
+                </button>
               )}
-            </h5>
+            </div>
           </div>
 
           <div className="card-image">
@@ -360,37 +362,32 @@ export default function Home() {
             </div>
             <p className="likes-count">{posts.likes.length} Likes</p>
             <p className="post-body">{posts.body}</p>
-            <p 
-              className="view-comments-btn"
-              onClick={() => toggleComment(posts)}
-            >
-              View all comments ({posts.comments.length})
-            </p>
-          </div>
-
-          {/* Comment Section */}
-          <div className="add-comment">
-            <span className="material-symbols-outlined">mood</span>
-            <input
-              type="text"
-              placeholder="Add a comment"
-              value={comments[posts._id] || ""}
-              onChange={(e) =>
-                setComments(prev => ({ ...prev, [posts._id]: e.target.value }))
-              }
-              onKeyPress={(e) => handleKeyPress(e, posts._id)}
-            />
-            <button
-              className="comment"
-              onClick={() => makeComment(comments[posts._id], posts._id)}
-            >
-              Post
+            
+            <button className="view-comments-btn" onClick={() => toggleComment(posts)}>
+              View all comments
             </button>
+
+            {posts.comments.slice(-2).map((comment, index) => (
+              <p className="comm" key={index}>
+                <Link to={`/profile/${comment.postedBy?._id}`} className="commenter">
+                  {comment.postedBy?.name || "Unknown User"}
+                </Link>
+                <span className="commentText">{comment.comment}</span>
+              </p>
+            ))}
+
+            <div className="add-comment-wrapper">
+              <EmojiCommentInput 
+                value={comments[posts._id] || ""}
+                onChange={(text) => setComments(prev => ({ ...prev, [posts._id]: text }))}
+                onSubmit={() => makeComment(comments[posts._id], posts._id)}
+                placeholder="Add a comment"
+              />
+            </div>
           </div>
         </div>
       ))}
 
-      {/* Comments Modal */}
       {show && item && (
         <div className="showComment">
           <div className="container">
@@ -398,71 +395,47 @@ export default function Home() {
               <img src={item.photo} alt="Post content" />
             </div>
             <div className="details">
-              {/* Comment Modal Header */}
               <div className="card-header">
                 <div className="card-pic">
-                  <img 
-                    src={item.postedBy?.Photo || picLink} 
-                    alt="profile"
-                    onClick={() => handleProfileClick(item.postedBy?._id)}
-                    style={{ cursor: 'pointer' }}
-                  />
+                  <Link to={`/profile/${item.postedBy?._id}`}>
+                    <img 
+                      src={item.postedBy?.Photo || picLink} 
+                      alt="profile"
+                    />
+                  </Link>
                 </div>
                 <h5>
-                  {item.postedBy?._id ? (
-                    <Link to={`/profile/${item.postedBy._id}`}>
-                      {item.postedBy.name}
-                    </Link>
-                  ) : (
-                    <span>{item.postedBy?.name || "Unknown User"}</span>
-                  )}
+                  <Link to={`/profile/${item.postedBy?._id}`}>
+                    {item.postedBy?.name || "Unknown User"}
+                  </Link>
                 </h5>
               </div>
 
-              {/* Comments List */}
               <div className="comment-section">
                 {item.comments.map((comment, index) => (
                   <p className="comm" key={index}>
-                    <span 
-                      className="commenter"
-                      onClick={() => handleProfileClick(comment.postedBy?._id)}
-                      style={{ cursor: 'pointer' }}
-                    >
+                    <Link to={`/profile/${comment.postedBy?._id}`} className="commenter">
                       {comment.postedBy?.name}
-                    </span>
+                    </Link>
                     <span className="commentText">{comment.comment}</span>
                   </p>
                 ))}
               </div>
-              <div className="card-content">
-                <p className="likes-count">{item.likes.length} Likes</p>
-                <p className="post-body">{item.body}</p>
-              </div>
 
-              <div className="add-comment">
-                <span className="material-symbols-outlined">mood</span>
-                <input
-                  type="text"
-                  placeholder="Add a comment"
+              <div className="add-comment-wrapper">
+                <EmojiCommentInput 
                   value={comments[item._id] || ""}
-                  onChange={(e) =>
-                    setComments(prev => ({ ...prev, [item._id]: e.target.value }))
-                  }
-                  onKeyPress={(e) => handleKeyPress(e, item._id)}
-                />
-                <button
-                  className="comment"
-                  onClick={() => {
+                  onChange={(text) => setComments(prev => ({ ...prev, [item._id]: text }))}
+                  onSubmit={() => {
                     makeComment(comments[item._id], item._id);
                     toggleComment();
                   }}
-                >
-                  Post
-                </button>
+                  placeholder="Add a comment"
+                />
               </div>
             </div>
           </div>
-          <div className="close-comment" onClick={() => setShow(false)}>
+          <div className="close-comment" onClick={() => toggleComment()}>
             <span className="material-symbols-outlined material-symbols-outlined-comment">
               close
             </span>

@@ -1,3 +1,4 @@
+
 const express = require("express");
 const router = express.Router();
 const mongoose = require("mongoose");
@@ -146,6 +147,14 @@ router.post("/signin", async (req, res) => {
       success: false,
       error: "An error occurred during signin. Please try again."
     });
+  }
+});
+router.get("/currentUser", requireLogin, (req, res) => {
+  try {
+      res.json(req.user);
+  } catch (err) {
+      console.error(err);
+      res.status(500).json({ error: "Failed to fetch user data" });
   }
 });
 

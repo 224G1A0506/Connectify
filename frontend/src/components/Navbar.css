@@ -178,3 +178,80 @@
       flex-wrap: wrap;
   }
 }
+.nav-link {
+  position: relative;
+  text-decoration: none;
+  padding: 8px 12px;
+  border-radius: 12px;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+}
+
+/* Style both material icons and Lucide icons */
+.nav-link span,
+.nav-link svg {
+  font-size: 24px;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Hover effects for both types of icons */
+.nav-link:hover span,
+.nav-link:hover svg {
+  transform: scale(1.1);
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2));
+}
+
+/* Icon-specific colors on hover */
+.nav-link:hover span[class*="account_circle"] {
+  color: #ff6b6b;
+}
+
+.nav-link:hover span[class*="add_box"] {
+  color: #4ecdc4;
+}
+
+.nav-link:hover span[class*="explore"] {
+  color: #45b7d1;
+}
+
+.nav-link:hover span[class*="logout"] {
+  color: #ff9f43;
+}
+
+/* Style for the message icon specifically */
+.nav-link svg {
+  width: 24px;
+  height: 24px;
+}
+
+.nav-link:hover svg {
+  color: #6c5ce7;
+}
+
+/* Background animation on hover for all nav links */
+.light-mode .nav-link:hover {
+  background: rgba(0, 0, 0, 0.05);
+}
+
+.dark-mode .nav-link:hover {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+/* Dark mode adjustments */
+.dark-mode .nav-link:hover span,
+.dark-mode .nav-link:hover svg {
+  filter: drop-shadow(0 2px 4px rgba(255, 255, 255, 0.1));
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+  .nav-link {
+    padding: 6px 10px;
+  }
+  
+  .nav-link span,
+  .nav-link svg {
+    font-size: 22px;
+  }
+}

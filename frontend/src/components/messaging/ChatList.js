@@ -203,7 +203,6 @@ const ChatList = () => {
     setSearchResults([]);
     setSearching(false);
   };
-
   const startConversation = async (userId) => {
     const auth = verifyTokenAndGetUser();
     if (!auth) {
@@ -212,7 +211,6 @@ const ChatList = () => {
     }
   
     try {
-      // First try to create a new conversation
       const createResponse = await fetch('/api/messages/conversation/create', {
         method: 'POST',
         headers: {
@@ -227,8 +225,10 @@ const ChatList = () => {
       if (!createResponse.ok) {
         throw new Error('Failed to create conversation');
       }
+
+      const result = await createResponse.json();
   
-      // Navigate to the new conversation
+      // Navigate using the userId directly
       navigate(`/messages/${userId}`);
       clearSearch();
       
@@ -239,7 +239,7 @@ const ChatList = () => {
       setError('Failed to start conversation. Please try again.');
       setTimeout(() => setError(null), 3000);
     }
-  };
+};
   if (loading) {
     return <div className="loading">Loading conversations...</div>;
   }

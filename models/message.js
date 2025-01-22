@@ -13,7 +13,8 @@ const messageSchema = new mongoose.Schema({
     },
     message: { 
         type: String, 
-        required: true 
+        required: false,  // Changed from true to false
+        default: ''
     },
     timestamp: { 
         type: Date, 

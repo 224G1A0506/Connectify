@@ -13,58 +13,89 @@ const ChatWindow = () => {
   const [isTyping, setIsTyping] = useState(false);
   const [otherUserDetails, setOtherUserDetails] = useState(null);
   const messagesEndRef = useRef(null);
+  const socketRef = useRef(null);
   const navigate = useNavigate();
   const token = localStorage.getItem('jwt');
   const currentUser = JSON.parse(localStorage.getItem('user'));
 
+  // Initialize socket connection
   useEffect(() => {
     if (!token || !currentUser) {
       navigate('/signin');
       return;
     }
-  
-    const newSocket = io(process.env.REACT_APP_API_URL || 'http://localhost:5000', {
-      auth: { token },
-      transports: ['websocket'],
-      reconnection: true,
-      reconnectionAttempts: 5,
-      query: {
-        userId: currentUser._id
-      }
-    });
-  
-    newSocket.on('connect', () => {
-      console.log('Socket connected successfully');
-      
-      // Create and join chat room
-      const chatRoom = [currentUser._id, userId].sort().join('-');
-      newSocket.emit('join_chat', chatRoom);
-      
-      // Emit user online status
-      newSocket.emit('user_online', currentUser._id);
-    });
-  
-    newSocket.on('connect_error', (error) => {
-      console.error('Socket connection error:', error);
-      if (error.message.includes('auth')) {
-        navigate('/signin');
-      }
-    });
-  
-    setSocket(newSocket);
-  
-    // Fetch initial data
-    fetchMessages();
-    fetchUserDetails();
-  
+
+    // Only create a new socket if one doesn't exist
+    if (!socketRef.current) {
+      const newSocket = io(process.env.REACT_APP_API_URL || 'http://localhost:5000', {
+        auth: { token },
+        transports: ['websocket'],
+        reconnection: true,
+        reconnectionAttempts: 5,
+        query: {
+          userId: currentUser._id
+        }
+      });
+
+      newSocket.on('connect', () => {
+        console.log('Socket connected successfully');
+        const chatRoom = [currentUser._id, userId].sort().join('-');
+        newSocket.emit('join_chat', chatRoom);
+        newSocket.emit('user_online', currentUser._id);
+      });
+
+      newSocket.on('connect_error', (error) => {
+        console.error('Socket connection error:', error);
+        if (error.message.includes('auth')) {
+          navigate('/signin');
+        }
+      });
+
+      // Set up message handling
+      newSocket.on('receive_message', (newMessage) => {
+        setMessages(prev => {
+          // Prevent duplicate messages
+          const messageExists = prev.some(msg => msg._id === newMessage._id);
+          if (messageExists) return prev;
+          return [...prev, newMessage];
+        });
+
+        if (newMessage.senderId === userId) {
+          markMessagesAsRead(newSocket);
+        }
+      });
+
+      // Set up typing indicator
+      newSocket.on('typing_indicator', ({ userId: typingUserId, typing }) => {
+        if (typingUserId === userId) {
+          setIsTyping(typing);
+        }
+      });
+
+      // Set up read receipts
+      newSocket.on('messages_marked_read', ({ senderId, receiverId }) => {
+        if (senderId === currentUser._id && receiverId === userId) {
+          setMessages(prev => 
+            prev.map(msg => msg.senderId === currentUser._id ? { ...msg, isRead: true } : msg)
+          );
+        }
+      });
+
+      socketRef.current = newSocket;
+      setSocket(newSocket);
+    }
+
     return () => {
-      if (newSocket) {
-        newSocket.disconnect();
+      if (socketRef.current) {
+        socketRef.current.disconnect();
+        socketRef.current = null;
       }
     };
   }, [userId, currentUser?._id, token, navigate]);
 
   const fetchUserDetails = async () => {
+    if (!token || !userId) return;
+
     try {
       const response = await fetch(`/api/user/${userId}`, {
         headers: {
@@ -72,18 +103,20 @@ const ChatWindow = () => {
         }
       });
       
-      if (response.status === 401) {
-        navigate('/signin');
-        return;
+      if (!response.ok) {
+        if (response.status === 401) {
+          navigate('/signin');
+          return;
+        }
+        throw new Error('Failed to fetch user details');
       }
       
       const data = await response.json();
-      setOtherUserDetails(data);
+      if (data) {
+        setOtherUserDetails(data);
+      }
     } catch (error) {
       console.error('Error fetching user details:', error);
-      if (error.response?.status === 401) {
-        navigate('/signin');
-      }
     }
   };
 
@@ -102,7 +135,7 @@ const ChatWindow = () => {
       
       const data = await response.json();
       setMessages(data);
-      markMessagesAsRead();
+      markMessagesAsRead(socketRef.current);
     } catch (error) {
       console.error('Error fetching messages:', error);
       if (error.response?.status === 401) {
@@ -111,7 +144,7 @@ const ChatWindow = () => {
     }
   };
 
-  const markMessagesAsRead = () => {
+  const markMessagesAsRead = (socket) => {
     if (socket && socket.connected) {
       socket.emit('mark_messages_read', {
         senderId: userId,
@@ -148,11 +181,16 @@ const ChatWindow = () => {
       }
 
       const newMessage = await response.json();
-      if (socket && socket.connected) {
-        socket.emit('send_message', newMessage);
+      if (socketRef.current && socketRef.current.connected) {
+        socketRef.current.emit('send_message', newMessage);
       }
       
-      setMessages(prev => [...prev, newMessage]);
+      // Update messages state only if the message doesn't exist
+      setMessages(prev => {
+        const messageExists = prev.some(msg => msg._id === newMessage._id);
+        if (messageExists) return prev;
+        return [...prev, newMessage];
+      });
     } catch (error) {
       console.error('Error sending message:', error);
       if (error.response?.status === 401) {
@@ -161,37 +199,13 @@ const ChatWindow = () => {
     }
   };
 
+  // Fetch initial data
   useEffect(() => {
-    if (!socket) return;
+    fetchUserDetails();
+    fetchMessages();
+  }, [userId]);
 
-    socket.on('receive_message', (newMessage) => {
-      setMessages(prev => [...prev, newMessage]);
-      if (newMessage.senderId === userId) {
-        markMessagesAsRead();
-      }
-    });
-
-    socket.on('typing_indicator', ({ userId: typingUserId, typing }) => {
-      if (typingUserId === userId) {
-        setIsTyping(typing);
-      }
-    });
-
-    socket.on('messages_marked_read', ({ senderId, receiverId }) => {
-      if (senderId === currentUser?._id && receiverId === userId) {
-        setMessages(prev => 
-          prev.map(msg => msg.senderId === currentUser._id ? { ...msg, isRead: true } : msg)
-        );
-      }
-    });
-
-    return () => {
-      socket.off('receive_message');
-      socket.off('typing_indicator');
-      socket.off('messages_marked_read');
-    };
-  }, [socket, userId, currentUser?._id]);
-
+  // Scroll to bottom when messages update
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages]);

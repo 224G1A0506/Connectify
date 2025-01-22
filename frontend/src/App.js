@@ -16,6 +16,7 @@ import SearchResults from "./components/SearchResults";
 import { ChatList, ChatWindow } from './components/messaging';
 import "./App.css"; // Make sure your CSS file is imported
 import { MessagingContainer } from './components/messaging';
+import { ThemeProvider } from './context/ThemeContext';
 
 function App() {
   const [userLogin, setUserLogin] = useState(false);
@@ -45,6 +46,7 @@ function App() {
   };
 
   return (
+    <ThemeProvider>
     <BrowserRouter>
       <div className="App">
         <LoginContext.Provider value={{ setUserLogin, setModalOpen }}>
@@ -67,6 +69,7 @@ function App() {
         </LoginContext.Provider>
       </div>
     </BrowserRouter>
+    </ThemeProvider>
   );
 }
 

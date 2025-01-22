@@ -184,7 +184,7 @@ router.post('/send', requireLogin, async (req, res) => {
         
         res.status(201).json(newMessage);
     } catch (error) {
-        console.error('Error sending message:', error);
+        console.error('Detailed error:', error); 
         res.status(500).json({ error: 'Failed to send message' });
     }
 });
@@ -218,6 +218,7 @@ router.get('/search/users', requireLogin, async (req, res) => {
         res.status(500).json({ error: 'Search failed' });
     }
 });
+// Update the conversation/create route in message.js
 router.post('/conversation/create', requireLogin, async (req, res) => {
     try {
         const { receiverId } = req.body;
@@ -235,7 +236,7 @@ router.post('/conversation/create', requireLogin, async (req, res) => {
         // Check if conversation already exists
         const existingConversation = await Message.findOne({
             $or: [
-                { senderId: req.user._id, receiverId },
+                { senderId: req.user._id, receiverId: receiverId },
                 { senderId: receiverId, receiverId: req.user._id }
             ]
         });
@@ -243,16 +244,16 @@ router.post('/conversation/create', requireLogin, async (req, res) => {
         if (existingConversation) {
             return res.json({
                 success: true,
-                conversationId: existingConversation._id,
+                conversationId: receiverId, // Use receiverId as conversationId
                 message: 'Conversation already exists'
             });
         }
 
-        // Create initial message to establish conversation
+        // Create initial message
         const newMessage = new Message({
             senderId: req.user._id,
-            receiverId,
-            message: '', // Empty initial message
+            receiverId: receiverId,
+            message: '', // Empty initial message is allowed since we updated the schema
             timestamp: new Date(),
             isRead: false
         });
@@ -265,13 +266,13 @@ router.post('/conversation/create', requireLogin, async (req, res) => {
             const chatRoom = [req.user._id, receiverId].sort().join('-');
             io.to(chatRoom).emit('conversation_created', {
                 senderId: req.user._id,
-                receiverId
+                receiverId: receiverId
             });
         }
         
         res.status(201).json({
             success: true,
-            conversationId: newMessage._id,
+            conversationId: receiverId, // Use receiverId as conversationId
             message: 'Conversation created successfully'
         });
     } catch (error) {
@@ -279,7 +280,6 @@ router.post('/conversation/create', requireLogin, async (req, res) => {
         res.status(500).json({ error: 'Failed to create conversation' });
     }
 });
-
 
 // Add this to your backend routes (message.js)
 router.get('/verify-auth', requireLogin, (req, res) => {

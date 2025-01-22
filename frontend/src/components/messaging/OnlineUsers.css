@@ -121,3 +121,56 @@
       width: 100%;
     }
   }
+  .online-users-container {
+    width: 280px;
+    border-left: 1px solid rgba(219, 219, 219, 0.8);
+    background: white;
+    height: calc(100vh - 60px);
+    padding: 20px;
+    overflow-y: auto;
+    box-shadow: -2px 0 8px rgba(0, 0, 0, 0.04);
+  }
+  
+  .online-users-header {
+    padding-bottom: 16px;
+    border-bottom: 1px solid rgba(219, 219, 219, 0.8);
+    margin-bottom: 20px;
+  }
+  
+  .online-users-title {
+    margin: 0;
+    font-size: 18px;
+    font-weight: 600;
+    color: #262626;
+  }
+  
+  .online-users-list {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+  
+  .online-user-item {
+    display: flex;
+    align-items: center;
+    padding: 12px;
+    text-decoration: none;
+    color: inherit;
+    border-radius: 12px;
+    transition: all 0.2s ease;
+    background: white;
+  }
+  
+  .online-user-item:hover {
+    background-color: #f8f8f8;
+    transform: translateX(4px);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+  }
+  
+  .online-user-avatar {
+    position: relative;
+    width: 44px;
+    height: 44px;
+    margin-right: 12px;
+  }
+  
