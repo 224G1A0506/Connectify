@@ -1,5 +1,6 @@
 import React, { createContext, useState, useEffect } from "react";
 import Navbar from "./components/Navbar";
+import VerifyOTP from "./components/VeriifyOTP";
 import Home from "./components/Home";
 import SignUp from "./components/SignUp";
 import SignIn from "./components/SignIn";
@@ -88,6 +89,7 @@ function AppContent({ userLogin, setUserLogin, modalOpen, setModalOpen, isDarkMo
           } />
           <Route path="/signup" element={<SignUp />} />
           <Route path="/signin" element={<SignIn />} />
+          <Route path="/verify-otp" element={<VerifyOTP />} />
           <Route path="/profile" element={<Profile />} />
           <Route path="/createPost" element={<Createpost />} />
           {/* Remove duplicate routes and standardize parameter names */}

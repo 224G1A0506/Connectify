@@ -40,7 +40,6 @@ export default function Createpost() {
         }
       } catch (err) {
         console.error("Error fetching user:", err);
-        notifyA("Failed to load user profile");
       }
     };
 
@@ -162,11 +161,11 @@ export default function Createpost() {
         <div className="card-header">
           <div className="card-pic">
             <img
-              src={user?.Photo || "https://images.unsplash.com/photo-1570295999919-56ceb5ecca61?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxzZWFyY2h8MXx8cGVyc29ufGVufDB8MnwwfHw%3D&auto=format&fit=crop&w=500&q=60"}
+              src={user?.Photo || "https://content.jdmagicbox.com/comp/anantapur/n4/9999p8554.8554.190501113552.j4n4/catalogue/srit-engineering-college-anantapur-engineering-colleges-1220lpzduz.jpg"}
               alt="User profile"
             />
           </div>
-          <h5>{user?.name || "Loading..."}</h5>
+          <h5>{user?.name || "create a post"}</h5>
         </div>
         <textarea
           value={body}

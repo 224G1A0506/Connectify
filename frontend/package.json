@@ -17,6 +17,7 @@
         "bootstrap": "^5.3.3",
         "cra-template": "1.2.0",
         "date-fns": "^4.1.0",
+        "emoji-picker-react": "^4.12.2",
         "google-auth-library": "^9.15.0",
         "lucide-react": "^0.469.0",
         "path-browserify": "^1.0.1",

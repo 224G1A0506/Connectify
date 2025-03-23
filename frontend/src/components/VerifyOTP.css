@@ -1,0 +1,96 @@
+.verify-otp-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    background-color: #f5f5f5;
+  }
+  
+  .verify-otp-box {
+    background: white;
+    padding: 2rem;
+    border-radius: 10px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    text-align: center;
+    max-width: 400px;
+    width: 100%;
+  }
+  
+  .verify-otp-box h1 {
+    font-size: 1.5rem;
+    margin-bottom: 1rem;
+  }
+  
+  .verify-otp-box p {
+    font-size: 1rem;
+    margin-bottom: 1.5rem;
+  }
+  
+  .otp-input-container input {
+    width: 100%;
+    padding: 0.75rem;
+    font-size: 1rem;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    margin-bottom: 1.5rem;
+  }
+  
+  .verify-button {
+    width: 100%;
+    padding: 0.75rem;
+    font-size: 1rem;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+  }
+  
+  .verify-button:disabled {
+    background-color: #ccc;
+    cursor: not-allowed;
+  }
+  
+  .verify-button:hover:not(:disabled) {
+    background-color: #0056b3;
+  }
+  
+  .resend-otp-text {
+    margin-top: 1rem;
+    font-size: 0.9rem;
+  }
+  
+  .resend-button {
+    background: none;
+    border: none;
+    color: #007bff;
+    cursor: pointer;
+    font-size: 0.9rem;
+    text-decoration: underline;
+  }
+  
+  .resend-button:disabled {
+    color: #ccc;
+    cursor: not-allowed;
+  }
+  
+  .loading-spinner {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+  }
+  
+  .spinner {
+    animation: spin 1s linear infinite;
+  }
+  
+  @keyframes spin {
+    0% {
+      transform: rotate(0deg);
+    }
+    100% {
+      transform: rotate(360deg);
+    }
+  }

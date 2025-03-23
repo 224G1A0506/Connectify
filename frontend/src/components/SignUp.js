@@ -2,7 +2,6 @@ import React, { useState, useEffect, useRef } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import { Loader2 } from "lucide-react";
-import GoogleAuthButton from "./GoogleAuthButton";
 import logo from "../img/logo100 (3).png";
 import "./SignUp.css";
 
@@ -72,7 +71,7 @@ export default function SignUp() {
         return "";
     }
   };
-  
+
   // Input change handler
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -110,73 +109,41 @@ export default function SignUp() {
 
     const errors = validateForm();
     if (Object.keys(errors).length > 0) {
-      setFormErrors(errors);
-      return;
+        setFormErrors(errors);
+        return;
     }
 
     setIsLoading(true);
 
     try {
-      // Update to use the correct API endpoint
-      const response = await fetch("/api/auth/signup", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          email: formData.email.trim(),
-          name: formData.name.trim(),
-          userName: formData.userName.trim(),
-          password: formData.password,
-        }),
-      });
+        const response = await fetch("/api/auth/signup", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+                email: formData.email.trim(),
+                name: formData.name.trim(),
+                userName: formData.userName.trim(),
+                password: formData.password,
+            }),
+        });
 
-      let data;
-      try {
-        data = await response.json();
-      } catch (parseError) {
-        console.error("JSON Parse Error:", parseError);
-        throw new Error("Failed to parse server response. Please try again later.");
-      }
-
-      if (!response.ok) {
-        if (response.status === 422) {
-          if (data.errors) {
-            setFormErrors(data.errors);
-          } else if (data.field) {
-            setFormErrors({ [data.field]: data.error });
-          }
-          toast.error(data.error || "Please check your input");
+        const data = await response.json();
+        if (!response.ok) {
+            console.error("Backend error:", data); // Log the backend error
+            throw new Error(data.error || "Signup failed");
         } else {
-          throw new Error(data.error || "Signup failed");
+            toast.success(data.message);
+            navigate("/verify-otp", { state: { email: formData.email } });
         }
-      } else {
-        toast.success(data.message || "Sign up successful!");
-        
-        // If OTP verification is needed, navigate to OTP page with required data
-        if (data.userId && data.email) {
-          navigate("/verify-otp", { 
-            state: { 
-              userId: data.userId, 
-              email: data.email 
-            } 
-          });
-        } else {
-          // Otherwise, redirect to signin after delay
-          setTimeout(() => {
-            navigate("/signin");
-          }, 1500);
-        }
-      }
     } catch (error) {
-      console.error("Signup Error:", error);
-      toast.error(
-        error.message || "Failed to sign up. Please try again later."
-      );
+        console.error("Frontend error:", error); // Log the frontend error
+        toast.error(error.message || "Failed to sign up. Please try again later.");
     } finally {
-      setIsLoading(false);
+        setIsLoading(false);
     }
-  };
+};
 
   // Get password strength text
   const getPasswordStrengthText = () => {
@@ -316,8 +283,6 @@ export default function SignUp() {
               "Sign Up with Email"
             )}
           </button>
-
-          <GoogleAuthButton />
         </form>
 
         <div className="signin-container">
