@@ -13,7 +13,7 @@ const ChatInput = ({ onSendMessage, socket, receiverId }) => {
   const typingTimeoutRef = useRef(null);
 
   const handleTyping = () => {
-    if (socket) {
+    if (socket && socket.connected) {
       socket.emit('typing_start', { receiverId });
       
       if (typingTimeoutRef.current) {
@@ -21,7 +21,9 @@ const ChatInput = ({ onSendMessage, socket, receiverId }) => {
       }
       
       typingTimeoutRef.current = setTimeout(() => {
-        socket.emit('typing_stop', { receiverId });
+        if (socket.connected) {
+          socket.emit('typing_stop', { receiverId });
+        }
       }, 1000);
     }
   };
@@ -46,14 +48,13 @@ const ChatInput = ({ onSendMessage, socket, receiverId }) => {
     }
     setSelectedFile(file);
   };
-
   const handleSend = async () => {
     if ((!message.trim() && !selectedFile) || isSubmitting) return;
-
+  
     try {
       setIsSubmitting(true);
       let fileUrl = null;
-
+  
       if (selectedFile) {
         const formData = new FormData();
         formData.append('file', selectedFile);
@@ -62,26 +63,34 @@ const ChatInput = ({ onSendMessage, socket, receiverId }) => {
           method: 'POST',
           body: formData,
           headers: {
-            'Authorization': `Bearer ${localStorage.getItem('token')}`
+            'Authorization': `Bearer ${localStorage.getItem('jwt')}`
           }
         });
-
+  
+        if (!uploadResponse.ok) {
+          throw new Error('File upload failed');
+        }
+  
         const { url } = await uploadResponse.json();
         fileUrl = url;
       }
-
-      await onSendMessage({
-        text: message,
+  
+      const messageData = {
+        text: message.trim(), // Ensure message is trimmed
         fileUrl,
-        fileType: selectedFile?.type
-      });
-
+        fileType: selectedFile?.type,
+        clientMessageId: Date.now().toString() + Math.random().toString(36).substr(2, 9) // Unique ID for deduplication
+      };
+      
+      await onSendMessage(messageData); // Ensure this is called only once
+  
       setMessage('');
       setSelectedFile(null);
       setSelectedImage(null);
       setShowImagePreview(false);
     } catch (error) {
       console.error('Error sending message:', error);
+      alert('Failed to send message. Please try again.');
     } finally {
       setIsSubmitting(false);
     }
@@ -166,7 +175,7 @@ const ChatInput = ({ onSendMessage, socket, receiverId }) => {
         <button 
           className={`send-button ${message.trim() || selectedFile ? 'active' : ''}`}
           onClick={handleSend}
-          disabled={!message.trim() && !selectedFile}
+          disabled={(!message.trim() && !selectedFile) || isSubmitting}
         >
           <Send size={20} />
         </button>

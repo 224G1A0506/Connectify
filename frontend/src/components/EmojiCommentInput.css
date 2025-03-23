@@ -1,0 +1,117 @@
+.emoji-comment-form {
+    display: flex;
+    width: 100%;
+    align-items: center;
+    margin-top: 10px;
+  }
+  
+  .emoji-input-container {
+    position: relative;
+    flex: 1;
+  }
+  
+  .emoji-text-input {
+    width: 100%;
+    padding: 10px 40px 10px 15px;
+    border: 1px solid #dbdbdb;
+    border-radius: 22px;
+    font-size: 14px;
+    box-sizing: border-box;
+    background-color: transparent;
+  }
+  
+  .dark-mode .emoji-text-input {
+    border-color: #333;
+    color: #fff;
+  }
+  
+  .emoji-button {
+    position: absolute;
+    right: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    font-size: 18px;
+    cursor: pointer;
+    padding: 0;
+  }
+  
+  .comment-submit-button {
+    background: none;
+    border: none;
+    color: #0095f6;
+    font-weight: 600;
+    cursor: pointer;
+    padding: 0 15px;
+    font-size: 14px;
+  }
+  
+  .comment-submit-button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+  
+  .emoji-picker {
+    position: absolute;
+    bottom: 40px;
+    right: 0;
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+    width: 300px;
+    max-height: 250px;
+    overflow-y: auto;
+    z-index: 10;
+    padding: 10px;
+  }
+  
+  .dark-mode .emoji-picker {
+    background-color: #262626;
+    border: 1px solid #333;
+  }
+  
+  .emoji-category {
+    margin-bottom: 12px;
+  }
+  
+  .emoji-category h4 {
+    margin: 0 0 5px 0;
+    font-size: 14px;
+    color: #8e8e8e;
+    padding-left: 2px;
+  }
+  
+  .emoji-grid {
+    display: grid;
+    grid-template-columns: repeat(8, 1fr);
+    gap: 5px;
+  }
+  
+  .emoji-item {
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 20px;
+    padding: 5px;
+    border-radius: 4px;
+    transition: background-color 0.2s;
+  }
+  
+  .emoji-item:hover {
+    background-color: #f0f0f0;
+  }
+  
+  .dark-mode .emoji-item:hover {
+    background-color: #363636;
+  }
+  
+  @media (max-width: 480px) {
+    .emoji-picker {
+      width: 260px;
+    }
+    
+    .emoji-grid {
+      grid-template-columns: repeat(6, 1fr);
+    }
+  }

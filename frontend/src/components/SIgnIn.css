@@ -66,18 +66,66 @@
   }
 }
 
+/* Updated logo styles to match SignUp.css */
 .signUpLogo {
+  display: block;
+  margin: 0 auto 1rem;
+  position: relative;
+  animation: logoFloat 6s ease-in-out infinite;
   width: 100px;
-  margin-bottom: 20px;
-  animation: logoGlow 2s ease-in-out infinite;
+}
+
+.signUpLogo::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 100%;
+  height: 100%;
+  background: radial-gradient(circle, rgba(71, 118, 230, 0.2), transparent 70%);
+  transform: translate(-50%, -50%);
+  animation: logoGlow 3s ease-in-out infinite alternate;
+}
+
+@keyframes logoFloat {
+  0%, 100% {
+    transform: translateY(0) rotate(0deg);
+    filter: drop-shadow(0 0 8px #ff0066);
+  }
+  50% {
+    transform: translateY(-10px) rotate(2deg);
+    filter: drop-shadow(0 0 15px #00ffff);
+  }
 }
 
 @keyframes logoGlow {
-  0%, 100% {
-    filter: drop-shadow(0 0 5px #ff0066);
+  from { opacity: 0.5; transform: translate(-50%, -50%) scale(0.8); }
+  to { opacity: 1; transform: translate(-50%, -50%) scale(1.2); }
+}
+
+/* Added connectify title styling from SignUp.css */
+.connectify-title {
+  color: #fff;
+  text-align: center;
+  margin-bottom: 1.5rem;
+  font-size: 2rem;
+  font-weight: 700;
+  letter-spacing: 1px;
+  background: linear-gradient(45deg, #ff0066, #00ffff);
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  position: relative;
+  text-shadow: 0 0 10px rgba(255, 0, 102, 0.5);
+  animation: textFlicker 3s infinite alternate;
+}
+
+@keyframes textFlicker {
+  0%, 19.999%, 22%, 62.999%, 64%, 97.999%, 100% {
+    opacity: 1;
   }
-  50% {
-    filter: drop-shadow(0 0 20px #00ffff);
+  20%, 21.999%, 63%, 63.999%, 98%, 99.999% {
+    opacity: 0.8;
   }
 }
 

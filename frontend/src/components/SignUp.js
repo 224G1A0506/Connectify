@@ -1,8 +1,8 @@
 import React, { useState, useEffect, useRef } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { toast } from 'react-toastify';
+import { toast } from "react-toastify";
 import { Loader2 } from "lucide-react";
-import GoogleAuthButton from './GoogleAuthButton';
+import GoogleAuthButton from "./GoogleAuthButton";
 import logo from "../img/logo100 (3).png";
 import "./SignUp.css";
 
@@ -13,7 +13,7 @@ export default function SignUp() {
     name: "",
     email: "",
     userName: "",
-    password: ""
+    password: "",
   });
   const [isLoading, setIsLoading] = useState(false);
   const [formErrors, setFormErrors] = useState({});
@@ -35,20 +35,20 @@ export default function SignUp() {
   // Field validation
   const validateField = (name, value) => {
     switch (name) {
-      case 'email':
+      case "email":
         if (!value) return "Email is required";
-        if (!/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(value)) {
-          return "Please enter a valid email address";
+        if (!/^[a-zA-Z0-9._%+-]+@srit\.ac\.in$/.test(value)) {
+          return "Only @srit.ac.in emails are allowed for registration.";
         }
         return "";
-      
-      case 'name':
+
+      case "name":
         if (!value.trim()) return "Name is required";
         if (value.length < 2) return "Name must be at least 2 characters";
         if (value.length > 50) return "Name must not exceed 50 characters";
         return "";
-      
-      case 'userName':
+
+      case "userName":
         if (!value.trim()) return "Username is required";
         if (value.length < 3) return "Username must be at least 3 characters";
         if (value.length > 30) return "Username must not exceed 30 characters";
@@ -56,35 +56,39 @@ export default function SignUp() {
           return "Username can only contain letters, numbers, and underscores";
         }
         return "";
-      
-      case 'password':
+
+      case "password":
         if (!value) return "Password is required";
-        if (!/^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%^&*])(?=.{8,})/.test(value)) {
+        if (
+          !/^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%^&*])(?=.{8,})/.test(
+            value
+          )
+        ) {
           return "Password must include uppercase, lowercase, number, special character, and be at least 8 characters";
         }
         return "";
-      
+
       default:
         return "";
     }
   };
-
+  
   // Input change handler
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
-      [name]: value
+      [name]: value,
     }));
 
     if (submitAttempted) {
-      setFormErrors(prev => ({
+      setFormErrors((prev) => ({
         ...prev,
-        [name]: validateField(name, value)
+        [name]: validateField(name, value),
       }));
     }
 
-    if (name === 'password') {
+    if (name === "password") {
       checkPasswordStrength(value);
     }
   };
@@ -92,7 +96,7 @@ export default function SignUp() {
   // Form validation
   const validateForm = () => {
     const errors = {};
-    Object.keys(formData).forEach(field => {
+    Object.keys(formData).forEach((field) => {
       const error = validateField(field, formData[field]);
       if (error) errors[field] = error;
     });
@@ -103,7 +107,7 @@ export default function SignUp() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setSubmitAttempted(true);
-    
+
     const errors = validateForm();
     if (Object.keys(errors).length > 0) {
       setFormErrors(errors);
@@ -113,7 +117,8 @@ export default function SignUp() {
     setIsLoading(true);
 
     try {
-      const response = await fetch("/signup", {
+      // Update to use the correct API endpoint
+      const response = await fetch("/api/auth/signup", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -122,11 +127,17 @@ export default function SignUp() {
           email: formData.email.trim(),
           name: formData.name.trim(),
           userName: formData.userName.trim(),
-          password: formData.password
-        })
+          password: formData.password,
+        }),
       });
 
-      const data = await response.json();
+      let data;
+      try {
+        data = await response.json();
+      } catch (parseError) {
+        console.error("JSON Parse Error:", parseError);
+        throw new Error("Failed to parse server response. Please try again later.");
+      }
 
       if (!response.ok) {
         if (response.status === 422) {
@@ -140,20 +151,37 @@ export default function SignUp() {
           throw new Error(data.error || "Signup failed");
         }
       } else {
-        toast.success(data.message);
-        setTimeout(() => {
-          navigate("/signin");
-        }, 1500);
+        toast.success(data.message || "Sign up successful!");
+        
+        // If OTP verification is needed, navigate to OTP page with required data
+        if (data.userId && data.email) {
+          navigate("/verify-otp", { 
+            state: { 
+              userId: data.userId, 
+              email: data.email 
+            } 
+          });
+        } else {
+          // Otherwise, redirect to signin after delay
+          setTimeout(() => {
+            navigate("/signin");
+          }, 1500);
+        }
       }
     } catch (error) {
-      toast.error(error.message || "Failed to sign up. Please try again later.");
+      console.error("Signup Error:", error);
+      toast.error(
+        error.message || "Failed to sign up. Please try again later."
+      );
     } finally {
       setIsLoading(false);
     }
   };
 
+  // Get password strength text
   const getPasswordStrengthText = () => {
-    return ["Very Weak", "Weak", "Fair", "Good", "Strong"][strength] || "Very Weak";
+    const strengthLabels = ["Very Weak", "Weak", "Fair", "Good", "Strong"];
+    return strengthLabels[strength - 1] || "Very Weak";
   };
 
   return (
@@ -161,9 +189,10 @@ export default function SignUp() {
       <div className="form-container">
         <form ref={formRef} onSubmit={handleSubmit} className="form" noValidate>
           <img className="signUpLogo" src={logo} alt="Logo" />
-          <h1 className="welcome-text">Welcome to Our Community</h1>
-          
-          <GoogleAuthButton />
+          <h1 className="connectify-title">Connectify</h1>
+          <h2 className="welcome-text">
+            Welcome to SRIT <span className="welcome-text">Community</span>
+          </h2>
 
           <div className="input-container">
             <input
@@ -171,13 +200,15 @@ export default function SignUp() {
               name="email"
               value={formData.email}
               onChange={handleInputChange}
-              placeholder="Email"
-              className={formErrors.email ? 'error' : ''}
+              placeholder="Email (e.g., 224g1a0506@srit.ac.in)"
+              className={formErrors.email ? "error" : ""}
               aria-label="Email"
               aria-invalid={!!formErrors.email}
             />
             {formErrors.email && (
-              <span className="error-message" role="alert">{formErrors.email}</span>
+              <span className="error-message" role="alert">
+                {formErrors.email}
+              </span>
             )}
           </div>
 
@@ -188,12 +219,14 @@ export default function SignUp() {
               value={formData.name}
               onChange={handleInputChange}
               placeholder="Full Name"
-              className={formErrors.name ? 'error' : ''}
+              className={formErrors.name ? "error" : ""}
               aria-label="Full Name"
               aria-invalid={!!formErrors.name}
             />
             {formErrors.name && (
-              <span className="error-message" role="alert">{formErrors.name}</span>
+              <span className="error-message" role="alert">
+                {formErrors.name}
+              </span>
             )}
           </div>
 
@@ -204,12 +237,14 @@ export default function SignUp() {
               value={formData.userName}
               onChange={handleInputChange}
               placeholder="Username"
-              className={formErrors.userName ? 'error' : ''}
+              className={formErrors.userName ? "error" : ""}
               aria-label="Username"
               aria-invalid={!!formErrors.userName}
             />
             {formErrors.userName && (
-              <span className="error-message" role="alert">{formErrors.userName}</span>
+              <span className="error-message" role="alert">
+                {formErrors.userName}
+              </span>
             )}
           </div>
 
@@ -220,7 +255,7 @@ export default function SignUp() {
               value={formData.password}
               onChange={handleInputChange}
               placeholder="Password"
-              className={formErrors.password ? 'error' : ''}
+              className={formErrors.password ? "error" : ""}
               aria-label="Password"
               aria-invalid={!!formErrors.password}
             />
@@ -234,29 +269,40 @@ export default function SignUp() {
             </button>
             {formData.password && (
               <div className="password-strength">
-                <div className="strength-bar" role="meter" aria-label="Password strength">
+                <div
+                  className="strength-bar"
+                  role="meter"
+                  aria-label="Password strength"
+                >
                   {[...Array(5)].map((_, index) => (
                     <div
                       key={index}
-                      className={`strength-segment ${index < strength ? 'active' : ''}`}
+                      className={`strength-segment ${
+                        index < strength ? "active" : ""
+                      }`}
                       aria-hidden="true"
                     />
                   ))}
                 </div>
-                <span className="strength-text">{getPasswordStrengthText()}</span>
+                <span className="strength-text">
+                  {getPasswordStrengthText()}
+                </span>
               </div>
             )}
             {formErrors.password && (
-              <span className="error-message" role="alert">{formErrors.password}</span>
+              <span className="error-message" role="alert">
+                {formErrors.password}
+              </span>
             )}
           </div>
 
           <p className="terms-text">
-            By signing up, you agree to our Terms, Privacy Policy and Cookies Policy.
+            By signing up, you agree to our Terms, Privacy Policy and Cookies
+            Policy.
           </p>
 
-          <button 
-            type="submit" 
+          <button
+            type="submit"
             className="submit-button"
             disabled={isLoading}
             aria-busy={isLoading}
@@ -267,9 +313,11 @@ export default function SignUp() {
                 <span>Signing up...</span>
               </div>
             ) : (
-              'Sign Up with Email'
+              "Sign Up with Email"
             )}
           </button>
+
+          <GoogleAuthButton />
         </form>
 
         <div className="signin-container">

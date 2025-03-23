@@ -1,45 +1,46 @@
 import React, { createContext, useState, useEffect } from "react";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Navbar from "./components/Navbar";
 import Home from "./components/Home";
 import SignUp from "./components/SignUp";
 import SignIn from "./components/SignIn";
-import Profie from "./components/Profile";
+import Profile from "./components/Profile";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import Createpost from "./components/Createpost";
 import { LoginContext } from "./context/LoginContext";
 import Modal from "./components/Modal";
-import UserProfie from "./components/UserProfile";
-import MyFolliwngPost from "./components/MyFollowingPost";
+import UserProfile from "./components/UserProfile";
+import MyFollowingPost from "./components/MyFollowingPost";
 import SearchResults from "./components/SearchResults";
-import { ChatList, ChatWindow } from './components/messaging';
-import "./App.css"; // Make sure your CSS file is imported
 import { MessagingContainer } from './components/messaging';
+import "./App.css";
 import { ThemeProvider } from './context/ThemeContext';
+import Stories from './components/Stories';  
+import StoryCreation from './components/StoryCreation';
+import StoryViewer from './components/StoryViewer';
+import ViewStories from './components/ViewStories';
+import { BrowserRouter, Routes, Route, useLocation } from 'react-router-dom';
+import LandingPage from './components/LandingPage';
 
 function App() {
   const [userLogin, setUserLogin] = useState(false);
   const [modalOpen, setModalOpen] = useState(false);
   const [isDarkMode, setIsDarkMode] = useState(false);
 
-  // Step 1: Check for dark mode preference from localStorage
   useEffect(() => {
     const savedMode = localStorage.getItem("theme");
     if (savedMode === "dark") {
       setIsDarkMode(true);
-      document.body.classList.add("dark-mode"); // Apply dark mode class to body
+      document.body.classList.add("dark-mode");
     } else {
       setIsDarkMode(false);
-      document.body.classList.remove("dark-mode"); // Remove dark mode class
+      document.body.classList.remove("dark-mode");
     }
   }, []);
 
-  // Step 2: Toggle dark mode and store preference in localStorage
   const toggleTheme = () => {
     setIsDarkMode((prev) => {
       const newMode = !prev;
-      // Step 3: Save the selected theme to localStorage
       localStorage.setItem("theme", newMode ? "dark" : "light");
       return newMode;
     });
@@ -47,29 +48,61 @@ function App() {
 
   return (
     <ThemeProvider>
-    <BrowserRouter>
-      <div className="App">
-        <LoginContext.Provider value={{ setUserLogin, setModalOpen }}>
-          <Navbar login={userLogin} toggleTheme={toggleTheme} isDarkMode={isDarkMode} />
-          <Routes>
-            <Route path="/" element={<Home />} />
-            <Route path="/signup" element={<SignUp />} />
-            <Route path="/signin" element={<SignIn />} />
-            <Route exact path="/profile" element={<Profie />} />
-            <Route path="/createPost" element={<Createpost />} />
-            <Route path="/profile/:userid" element={<UserProfie />} />
-            <Route path="/user/:userId" element={<UserProfie />} />
-            <Route path="/followingpost" element={<MyFolliwngPost />} />
-            <Route path="/user/:id" element={<UserProfie />} />
-            <Route path="/search" element={<SearchResults />} />
-            <Route path="/messages/*" element={<MessagingContainer />} />
-          </Routes>
-          <ToastContainer theme="dark" />
-          {modalOpen && <Modal setModalOpen={setModalOpen} />}
-        </LoginContext.Provider>
-      </div>
-    </BrowserRouter>
+      <BrowserRouter>
+        <AppContent 
+          userLogin={userLogin} 
+          setUserLogin={setUserLogin} 
+          modalOpen={modalOpen} 
+          setModalOpen={setModalOpen} 
+          isDarkMode={isDarkMode} 
+          toggleTheme={toggleTheme} 
+        />
+      </BrowserRouter>
     </ThemeProvider>
+  );
+}
+
+function AppContent({ userLogin, setUserLogin, modalOpen, setModalOpen, isDarkMode, toggleTheme }) {
+  const location = useLocation();
+
+  // Conditionally render Navbar based on the current route
+  const showNavbar = !['/', '/signin', '/signup'].includes(location.pathname);
+ 
+  return (
+    <div className="App">
+      <LoginContext.Provider value={{ setUserLogin, setModalOpen }}>
+        {showNavbar && <Navbar login={userLogin} toggleTheme={toggleTheme} isDarkMode={isDarkMode} />}
+        <Routes>
+          <Route path="/" element={<LandingPage />} />
+          <Route path="/home" element={
+            <div className="pt-0">
+              <Stories />
+              <Home />
+            </div>
+          } />
+          <Route path="/followingpost" element={
+            <div className="pt-0">
+              <Stories />
+              <MyFollowingPost />
+            </div>
+          } />
+          <Route path="/signup" element={<SignUp />} />
+          <Route path="/signin" element={<SignIn />} />
+          <Route path="/profile" element={<Profile />} />
+          <Route path="/createPost" element={<Createpost />} />
+          {/* Remove duplicate routes and standardize parameter names */}
+          <Route path="/profile/:userId" element={<UserProfile />} />
+          {/* Remove /user/:userId route or make sure it's consistent with other routes */}
+          <Route path="/search" element={<SearchResults />} />
+          <Route path="/messages/*" element={<MessagingContainer />} />
+          <Route path="/create-story" element={<StoryCreation />} />
+          <Route path="/stories/:userId" element={<StoryViewer />} />
+          <Route path="/view-stories/:userId" element={<ViewStories />} />
+        </Routes>
+        <ToastContainer theme="dark" />
+        {modalOpen && <Modal setModalOpen={setModalOpen} />}
+      </LoginContext.Provider>
+    </div>
   );
 }
 

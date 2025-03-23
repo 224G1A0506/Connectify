@@ -1,110 +1,90 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef } from 'react';
+import './EmojiCommentInput.css';
 
-const EmojiCommentInput = ({ value, onChange, onSubmit, placeholder = "Add a comment" }) => {
-  const [showEmojiPicker, setShowEmojiPicker] = useState(false);
-  const [cursorPosition, setCursorPosition] = useState(0);
-  const inputRef = useRef(null);
+const EmojiCommentInput = ({ value, onChange, onSubmit, placeholder }) => {
+  const [showEmojis, setShowEmojis] = useState(false);
   const emojiPickerRef = useRef(null);
-
-  const emojis = [
-    "😀", "😂", "🥰", "😊", "😎", "🤔", "😴", "😍",
-    "👍", "🎉", "❤️", "🔥", "✨", "🙌", "👏", "💪",
-    "🌈", "🌟", "💖", "🎵", "🎮", "📸", "🎨", "🎭"
+  
+  // Common emoji sets
+  const emojiSets = [
+    { category: 'Smileys', emojis: ['😀', '😃', '😄', '😁', '😆', '😅', '🤣', '😂', '🙂', '😊', '😇', '🥰', '😍', '🤩', '😘', '😗'] },
+    { category: 'Gestures', emojis: ['👍', '👎', '👏', '🙌', '🤝', '👊', '✌️', '🤞', '🤟', '🤘', '👌', '🤌', '🤏', '👈', '👉', '👆'] },
+    { category: 'Hearts', emojis: ['❤️', '🧡', '💛', '💚', '💙', '💜', '🖤', '🤍', '🤎', '💔', '❤️‍🔥', '❤️‍🩹', '💕', '💞', '💓', '💗'] },
   ];
 
-  useEffect(() => {
-    const handleClickOutside = (event) => {
-      if (emojiPickerRef.current && !emojiPickerRef.current.contains(event.target) &&
-          event.target.className !== 'material-symbols-outlined') {
-        setShowEmojiPicker(false);
-      }
-    };
-
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
-  }, []);
-
-  const insertEmoji = (emoji) => {
-    if (!value) {
-      onChange(emoji);
-      return;
-    }
-    
-    const start = value.substring(0, cursorPosition);
-    const end = value.substring(cursorPosition);
-    const newComment = start + emoji + end;
-    onChange(newComment);
-    
-    if (inputRef.current) {
-      inputRef.current.focus();
-      setTimeout(() => {
-        const newPosition = cursorPosition + emoji.length;
-        inputRef.current.selectionStart = newPosition;
-        inputRef.current.selectionEnd = newPosition;
-        setCursorPosition(newPosition);
-      }, 0);
-    }
+  const handleEmojiSelect = (emoji) => {
+    onChange(value + emoji);
   };
 
-  const handleInputClick = (e) => {
-    setCursorPosition(e.target.selectionStart);
-  };
-
-  const handleKeyPress = (e) => {
-    if (e.key === 'Enter' && !e.shiftKey) {
-      e.preventDefault();
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    if (value.trim()) {
       onSubmit();
     }
   };
 
+  // Close emoji picker when clicking outside
+  const handleClickOutside = (e) => {
+    if (emojiPickerRef.current && !emojiPickerRef.current.contains(e.target)) {
+      setShowEmojis(false);
+    }
+  };
+
+  // Add event listener for clicking outside
+  React.useEffect(() => {
+    if (showEmojis) {
+      document.addEventListener('mousedown', handleClickOutside);
+    } else {
+      document.removeEventListener('mousedown', handleClickOutside);
+    }
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [showEmojis]);
+
   return (
-    <div className="add-comment">
-      <span 
-        className="material-symbols-outlined"
-        onClick={() => setShowEmojiPicker(!showEmojiPicker)}
-      >
-        mood
-      </span>
-      
-      {showEmojiPicker && (
-        <div 
-          ref={emojiPickerRef}
-          className="emoji-picker"
+    <form className="emoji-comment-form" onSubmit={handleSubmit}>
+      <div className="emoji-input-container">
+        <input
+          type="text"
+          value={value}
+          onChange={(e) => onChange(e.target.value)}
+          placeholder={placeholder}
+          className="emoji-text-input"
+        />
+        <button
+          type="button"
+          className="emoji-button"
+          onClick={() => setShowEmojis(!showEmojis)}
         >
-          <div className="emoji-grid">
-            {emojis.map((emoji, index) => (
-              <button
-                key={index}
-                className="emoji-button"
-                onClick={() => insertEmoji(emoji)}
-              >
-                {emoji}
-              </button>
+          😊
+        </button>
+        {showEmojis && (
+          <div className="emoji-picker" ref={emojiPickerRef}>
+            {emojiSets.map((set, setIndex) => (
+              <div key={setIndex} className="emoji-category">
+                <h4>{set.category}</h4>
+                <div className="emoji-grid">
+                  {set.emojis.map((emoji, index) => (
+                    <button
+                      key={index}
+                      className="emoji-item"
+                      onClick={() => handleEmojiSelect(emoji)}
+                      type="button"
+                    >
+                      {emoji}
+                    </button>
+                  ))}
+                </div>
+              </div>
             ))}
           </div>
-        </div>
-      )}
-      
-      <input
-        ref={inputRef}
-        type="text"
-        placeholder={placeholder}
-        value={value || ""}
-        onChange={(e) => {
-          onChange(e.target.value);
-          setCursorPosition(e.target.selectionStart);
-        }}
-        onClick={handleInputClick}
-        onKeyPress={handleKeyPress}
-      />
-      
-      <button
-        className="comment"
-        onClick={onSubmit}
-      >
+        )}
+      </div>
+      <button type="submit" className="comment-submit-button">
         Post
       </button>
-    </div>
+    </form>
   );
 };
 

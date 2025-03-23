@@ -255,3 +255,26 @@
     font-size: 22px;
   }
 }
+/* Navbar.css */
+.nav-link {
+  display: flex;
+  align-items: center;
+  color: var(--text-color);
+  text-decoration: none;
+  margin: 0 10px;
+}
+
+.nav-link .material-symbols-outlined {
+  font-size: 24px;
+}
+/* Add this to ensure the content doesn't overlap with the navbar */
+.navbar-spacer {
+  height: 70px; /* Adjust this value based on your navbar height */
+  width: 100%;
+}
+
+@media (max-width: 768px) {
+  .navbar-spacer {
+      height: 130px; /* Adjust this value for mobile */
+  }
+}

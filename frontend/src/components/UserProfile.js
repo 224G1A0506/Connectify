@@ -4,8 +4,8 @@ import "./Profile.css";
 import { useParams } from "react-router-dom";
 
 export default function UserProfile() {
-  var picLink = "https://cdn-icons-png.flaticon.com/128/3177/3177440.png";
-  const { userId } = useParams(); // Changed from userid to userId to match route parameter
+  const DEFAULT_PIC = "https://cdn-icons-png.flaticon.com/128/3177/3177440.png";
+  const { userId } = useParams(); // Make sure this matches the route parameter in App.js
   const [isFollow, setIsFollow] = useState(false);
   const [user, setUser] = useState("");
   const [posts, setPosts] = useState([]);
@@ -14,7 +14,7 @@ export default function UserProfile() {
 
   // to follow user
   const followUser = (userId) => {
-    fetch("http://localhost:5000/follow", {
+    fetch("/api/follow", {
       method: "put",
       headers: {
         "Content-Type": "application/json",
@@ -40,14 +40,14 @@ export default function UserProfile() {
 
   // to unfollow user
   const unfollowUser = (userId) => {
-    fetch("http://localhost:5000/unfollow", {
+    fetch("/api/unfollow", {
       method: "put",
       headers: {
         "Content-Type": "application/json",
         Authorization: "Bearer " + localStorage.getItem("jwt"),
       },
       body: JSON.stringify({
-        followId: userId,
+        unfollowId: userId,
       }),
     })
       .then((res) => {
@@ -74,13 +74,19 @@ export default function UserProfile() {
       return;
     }
 
-    fetch(`http://localhost:5000/user/${userId}`, {
+    fetch(`/api/user/${userId}`, {
       headers: {
+        "Content-Type": "application/json",
         Authorization: "Bearer " + localStorage.getItem("jwt"),
       },
     })
       .then((res) => {
-        if (!res.ok) throw new Error("Failed to fetch user data");
+        if (!res.ok) {
+          return res.text().then(text => {
+            console.error("Error response:", text);
+            throw new Error(`Failed to fetch user data: ${res.status}`);
+          });
+        }
         return res.json();
       })
       .then((result) => {
@@ -88,6 +94,7 @@ export default function UserProfile() {
         
         console.log(result);
         setUser(result.user);
+        // Fix the posts state assignment to match backend response structure
         setPosts(result.post || []);
         
         // Check if current user follows this profile
@@ -115,12 +122,12 @@ export default function UserProfile() {
         {/* profile-pic */}
         <div className="profile-pic">
           <img 
-            src={user.Photo ? user.Photo : picLink} 
+            src={user.Photo ? user.Photo : DEFAULT_PIC} 
             alt={`${user.name}'s profile`} 
           />
         </div>
         {/* profile-data */}
-        <div className="pofile-data">
+        <div className="profile-data">
           <div
             style={{
               display: "flex",

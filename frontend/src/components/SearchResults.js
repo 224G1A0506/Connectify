@@ -16,12 +16,17 @@ const SearchResults = () => {
             setLoading(true);
             setError(null);
 
-            fetch(`/search?q=${query}`, {
+            fetch(`/api/search?q=${query}`, {  // Ensure the correct API endpoint is used
                 headers: {
                     Authorization: `Bearer ${localStorage.getItem("jwt")}`, // Pass token if required
                 },
             })
-                .then((res) => res.json())
+                .then((res) => {
+                    if (!res.ok) {
+                        throw new Error("Failed to fetch results");
+                    }
+                    return res.json();
+                })
                 .then((data) => {
                     if (data.error) {
                         setError(data.error);
@@ -33,6 +38,7 @@ const SearchResults = () => {
                 .catch((err) => {
                     setError("Failed to fetch results. Please try again.");
                     setLoading(false);
+                    console.error("Fetch error:", err);
                 });
         }
     }, [query]);
@@ -57,7 +63,7 @@ const SearchResults = () => {
                     <li key={user._id} className="user-item">
                         <img src={user.Photo || "default-avatar.png"} alt={user.name} className="user-avatar" />
                         <div className="user-details">
-                            <Link to={`/user/${user._id}`} className="user-name">
+                        <Link to={`/profile/${user._id}`} className="user-name">
     {user.name}
 </Link>
                             <p className="user-email">{user.email}</p>

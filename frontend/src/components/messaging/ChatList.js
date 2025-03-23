@@ -25,9 +25,9 @@ const ChatList = () => {
   const [socket, setSocket] = useState(null);
   const navigate = useNavigate();
 
-  // Enhanced token verification
+  // Enhanced token verification with consistent naming
   const verifyTokenAndGetUser = useCallback(() => {
-    const token = localStorage.getItem('jwt'); // Changed from 'token' to 'jwt'
+    const token = localStorage.getItem('jwt'); // Consistently use 'jwt' instead of 'token'
     const userStr = localStorage.getItem('user');
   
     if (!token || !userStr) {
@@ -44,8 +44,6 @@ const ChatList = () => {
     }
   }, []);
   
-  
-
   // Fetch conversations with proper auth handling
   const fetchConversations = useCallback(async () => {
     const auth = verifyTokenAndGetUser();
@@ -64,7 +62,7 @@ const ChatList = () => {
       });
 
       if (response.status === 401) {
-        localStorage.removeItem('token');
+        localStorage.removeItem('jwt'); // Consistent name
         localStorage.removeItem('user');
         navigate('/signin');
         return;
@@ -76,8 +74,13 @@ const ChatList = () => {
 
       const data = await response.json();
       if (Array.isArray(data)) {
-        setConversations(data.sort((a, b) => 
-          new Date(b.timestamp) - new Date(a.timestamp)
+        // Ensure we have all required fields before sorting/showing
+        const validData = data.filter(conv => 
+          conv && conv._id && (conv.timestamp || conv.lastMessage)
+        );
+        
+        setConversations(validData.sort((a, b) => 
+          new Date(b.timestamp || 0) - new Date(a.timestamp || 0)
         ));
       }
     } catch (error) {
@@ -97,7 +100,7 @@ const ChatList = () => {
     }
 
     const newSocket = io(process.env.REACT_APP_API_URL || 'http://localhost:5000', {
-      auth: { token: auth.token },
+      auth: { token: auth.token }, // Use auth.token consistently
       reconnection: true,
       reconnectionDelay: 1000,
       reconnectionAttempts: 5
@@ -110,7 +113,7 @@ const ChatList = () => {
 
     newSocket.on('connect_error', (error) => {
       console.error('Socket connection error:', error);
-      if (error.message.includes('auth')) {
+      if (error.message && error.message.includes('auth')) {
         navigate('/signin');
       }
     });
@@ -126,15 +129,21 @@ const ChatList = () => {
         return updated;
       });
     });
+    
+    // Listen for new message events to update conversations
+    newSocket.on('receive_message', (message) => {
+      // Refresh conversations to show the latest message
+      fetchConversations();
+    });
 
     setSocket(newSocket);
 
     return () => {
       if (newSocket) {
-        newSocket.close();
+        newSocket.disconnect();
       }
     };
-  }, [navigate, verifyTokenAndGetUser]);
+  }, [navigate, verifyTokenAndGetUser, fetchConversations]);
 
   // Initial data fetch
   useEffect(() => {
@@ -203,6 +212,7 @@ const ChatList = () => {
     setSearchResults([]);
     setSearching(false);
   };
+  
   const startConversation = async (userId) => {
     const auth = verifyTokenAndGetUser();
     if (!auth) {
@@ -239,7 +249,9 @@ const ChatList = () => {
       setError('Failed to start conversation. Please try again.');
       setTimeout(() => setError(null), 3000);
     }
-};
+  };
+  
+  // Render a default placeholder while loading
   if (loading) {
     return <div className="loading">Loading conversations...</div>;
   }
@@ -313,7 +325,7 @@ const ChatList = () => {
                 <div className="conversation-avatar">
                   <img 
                     src={conv.user?.profilePic || "/default-avatar.png"} 
-                    alt="Profile" 
+                    alt={conv.user?.name || "User"} 
                     className="profile-pic"
                   />
                   {onlineUsers.has(conv.user?._id) && (
@@ -323,9 +335,9 @@ const ChatList = () => {
 
                 <div className="conversation-info">
                   <div className="conversation-header">
-                    <h4 className="user-name">{conv.user?.name}</h4>
+                    <h4 className="user-name">{conv.user?.name || "Unknown User"}</h4>
                     <span className="timestamp">
-                      {formatMessageTime(conv.timestamp)}
+                      {formatMessageTime(conv.timestamp) || "Recently"}
                     </span>
                   </div>
 

@@ -1,13 +1,8 @@
-// Navbar.js
 import React, { useContext, useState, useEffect } from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { LoginContext } from "../context/LoginContext";
 import "./Navbar.css";
-import logo from "../img/logo100 (3).png";
-import { MessageCircle } from 'lucide-react'; // Import the message icon
 import { useTheme } from '../context/ThemeContext';
-
-
 
 export default function Navbar({ login }) {
     const { isDarkMode, toggleTheme } = useTheme();
@@ -69,17 +64,22 @@ export default function Navbar({ login }) {
                     <Link to="/followingpost" className="nav-link" title="Explore">
                         <span className="material-symbols-outlined">explore</span>
                     </Link>
-                    <Link to="" className="nav-link" title="Logout">
-                        <span 
-                            className="material-symbols-outlined"
-                            onClick={() => setModalOpen(true)}
-                        >
-                            logout
-                        </span>
+                    <Link to="/messages" className="nav-link" title="Messages">
+                        <span className="material-symbols-outlined">chat</span>
                     </Link>
-                    <Link to="/messages" className="nav-icon" title="Messages">
-  <MessageCircle size={24} />
-</Link>
+                    <Link 
+                        to="" 
+                        className="nav-link" 
+                        title="Logout"
+                        onClick={() => {
+                            localStorage.removeItem("jwt"); // Remove the JWT token
+                            localStorage.removeItem("user"); // Remove the user data
+                            setModalOpen(true); // Open the modal (if needed)
+                            navigate("/"); // Redirect to the landing page
+                        }}
+                    >
+                        <span className="material-symbols-outlined">logout</span>
+                    </Link>
                 </>
             );
         }
@@ -88,10 +88,18 @@ export default function Navbar({ login }) {
 
     return (
         <>
-             <div className={`navbar ${isDarkMode ? "dark-mode" : "light-mode"}`}>
+            <div className={`navbar ${isDarkMode ? "dark-mode" : "light-mode"}`}>
                 <div className="navbar-content">
                     <Link to="/" className="logo-link">
-                        <img src={logo} alt="logo" />
+                        <span style={{
+                            fontSize: '24px',
+                            fontWeight: 'bold',
+                            background: 'linear-gradient(135deg, #00c6ff, #0072ff)',
+                            WebkitBackgroundClip: 'text',
+                            WebkitTextFillColor: 'transparent',
+                        }}>
+                            Connectify
+                        </span>
                     </Link>
                     
                     {!isAuthPage && (

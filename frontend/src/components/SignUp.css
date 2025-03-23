@@ -136,7 +136,7 @@
 /* Enhanced logo with neon trails */
 .signUpLogo {
   display: block;
-  margin: 0 auto 2rem;
+  margin: 0 auto 1rem;
   position: relative;
   animation: logoFloat 6s ease-in-out infinite;
 }
@@ -169,12 +169,38 @@
   to { opacity: 1; transform: translate(-50%, -50%) scale(1.2); }
 }
 
+/* Connectify title with neon effect */
+.connectify-title {
+  color: #fff;
+  text-align: center;
+  margin-bottom: 0.5rem;
+  font-size: 2.4rem;
+  font-weight: 700;
+  letter-spacing: 1px;
+  background: linear-gradient(45deg, #4776E6, #8E54E9);
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  position: relative;
+  text-shadow: 0 0 10px rgba(71, 118, 230,.5);
+  animation: textFlicker 3s infinite alternate;
+}
+
+@keyframes textFlicker {
+  0%, 19.999%, 22%, 62.999%, 64%, 97.999%, 100% {
+    opacity: 1;
+  }
+  20%, 21.999%, 63%, 63.999%, 98%, 99.999% {
+    opacity: 0.8;
+  }
+}
+
 /* Enhanced welcome text with neon effect */
 .welcome-text {
   color: #fff;
   text-align: center;
   margin-bottom: 2rem;
-  font-size: 1.8rem;
+  font-size: 1.4rem;
   position: relative;
   text-shadow: 
     0 0 5px #fff,
@@ -183,6 +209,14 @@
     0 0 30px #4776E6,
     0 0 40px #4776E6;
   animation: textPulse 2s infinite alternate;
+}
+
+.gradient-text {
+  background: linear-gradient(45deg, #4776E6, #8E54E9);
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  font-weight: bold;
 }
 
 @keyframes textPulse {
@@ -293,6 +327,39 @@
     0 0 30px rgba(71, 118, 230, 0.3);
 }
 
+/* Divider with "or" text */
+.divider {
+  display: flex;
+  align-items: center;
+  text-align: center;
+  margin: 1.5rem 0;
+  color: #fff;
+}
+
+.divider::before,
+.divider::after {
+  content: '';
+  flex: 1;
+  border-bottom: 1px solid rgba(71, 118, 230, 0.5);
+}
+
+.divider::before {
+  margin-right: 1rem;
+}
+
+.divider::after {
+  margin-left: 1rem;
+}
+
+.divider span {
+  padding: 0 10px;
+  text-transform: uppercase;
+  font-size: 0.8rem;
+  letter-spacing: 1px;
+  color: rgba(255, 255, 255, 0.7);
+  text-shadow: 0 0 5px rgba(71, 118, 230, 0.5);
+}
+
 /* Enhanced password strength indicator */
 .strength-bar {
   display: flex;
@@ -379,7 +446,11 @@
   }
   
   .welcome-text {
-    font-size: 1.5rem;
+    font-size: 1.2rem;
+  }
+  
+  .connectify-title {
+    font-size: 2rem;
   }
   
   .input-container input {

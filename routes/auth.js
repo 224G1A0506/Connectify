@@ -1,4 +1,3 @@
-
 const express = require("express");
 const router = express.Router();
 const mongoose = require("mongoose");
@@ -11,7 +10,7 @@ const requireLogin = require("../middlewares/requireLogin");
 // Input validation helper
 const validateInput = (input) => {
   const errors = {};
-  
+
   // Email validation
   const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
   if (!input.email || !emailRegex.test(input.email)) {
@@ -149,6 +148,8 @@ router.post("/signin", async (req, res) => {
     });
   }
 });
+
+// Get current user
 router.get("/currentUser", requireLogin, (req, res) => {
   try {
       res.json(req.user);

@@ -5,7 +5,6 @@ import ProfilePic from "./ProfilePic";
 import FollowersModal from "./FollowersModal";
 import { useParams } from "react-router-dom";
 
-
 export default function Profile() {
   const DEFAULT_PIC = "https://cdn-icons-png.flaticon.com/128/3177/3177440.png";
   const RETRY_ATTEMPTS = 3;
@@ -45,7 +44,6 @@ export default function Profile() {
     details: null
   });
 
-  // Enhanced follow data fetch with proper count handling
   const fetchFollowData = useCallback(async (type, retryCount = RETRY_ATTEMPTS) => {
     try {
       setError(prev => ({ ...prev, [type]: null }));
@@ -58,7 +56,7 @@ export default function Profile() {
         throw new Error("User ID not found");
       }
 
-      const response = await fetch(`/user/${targetUserId}/${type}`, {
+      const response = await fetch(`/api/user/${targetUserId}/${type}`, {
         headers: {
           "Content-Type": "application/json",
           "Authorization": "Bearer " + localStorage.getItem("jwt")
@@ -67,11 +65,18 @@ export default function Profile() {
       });
 
       if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.error || `Failed to fetch ${type}`);
+        const errorText = await response.text();
+        console.error(`Error response text: ${errorText}`);
+        throw new Error(`Failed to fetch ${type} (Status: ${response.status})`);
       }
 
-      const data = await response.json();
+      let data;
+      try {
+        data = await response.json();
+      } catch (jsonError) {
+        console.error(`Error parsing ${type} JSON:`, jsonError);
+        throw new Error(`Invalid ${type} data format received`);
+      }
       
       if (!data || typeof data !== 'object') {
         throw new Error(`Invalid ${type} data received`);
@@ -96,6 +101,7 @@ export default function Profile() {
       console.error(`${type} fetch error:`, err);
       
       if (retryCount > 0) {
+        console.log(`Retrying ${type} fetch... (${retryCount} attempts left)`);
         await new Promise(resolve => setTimeout(resolve, RETRY_DELAY));
         return fetchFollowData(type, retryCount - 1);
       }
@@ -110,7 +116,6 @@ export default function Profile() {
     }
   }, [userid]); 
 
-  // Main profile data fetch with follow data initialization
   useEffect(() => {
     const fetchProfileData = async () => {
       try {
@@ -123,7 +128,7 @@ export default function Profile() {
           throw new Error("User ID not found");
         }
 
-        const response = await fetch(`/user/${targetUserId}`, {
+        const response = await fetch(`/api/user/${targetUserId}`, {
           headers: {
             "Content-Type": "application/json",
             "Authorization": "Bearer " + localStorage.getItem("jwt")
@@ -131,10 +136,18 @@ export default function Profile() {
         });
 
         if (!response.ok) {
+          const errorText = await response.text();
+          console.error(`Error response text: ${errorText}`);
           throw new Error(`Profile fetch failed: ${response.status}`);
         }
 
-        const result = await response.json();
+        let result;
+        try {
+          result = await response.json();
+        } catch (jsonError) {
+          console.error("Error parsing profile JSON:", jsonError);
+          throw new Error("Invalid profile data format received");
+        }
         
         setProfileData({
           posts: result.post || [],
@@ -150,6 +163,7 @@ export default function Profile() {
           }));
         }
 
+        // Fetch follow data only if profile data was successfully loaded
         await Promise.all([
           fetchFollowData('followers'),
           fetchFollowData('following')

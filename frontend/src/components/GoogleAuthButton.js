@@ -41,8 +41,8 @@ const GoogleAuthButton = () => {
 
     const handleGoogleResponse = async (response) => {
         try {
-            // Send ID token to your backend
-            const result = await fetch('/google-auth', {
+            // Updated API endpoint to match backend routes
+            const result = await fetch('/api/google-auth', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
@@ -63,6 +63,7 @@ const GoogleAuthButton = () => {
                 navigate('/');
             }
         } catch (error) {
+            console.error('Google auth error:', error);
             toast.error('Something went wrong. Please try again.');
         }
     };

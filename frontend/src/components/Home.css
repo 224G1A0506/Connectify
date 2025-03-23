@@ -622,444 +622,36 @@
     overflow-y: auto;
     padding: 16px;
   }
-  /* Enhance existing card with 3D hover effect */
-.card {
-    perspective: 1000px;
-    transform-style: preserve-3d;
-    transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-    position: relative;
-    background: rgba(255, 255, 255, 0.1);
-    background: rgba(255, 255, 255, 0.2); /* Semi-transparent background */
-    border: 1px solid rgba(255, 255, 255, 0.3); /* Subtle border */
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1); /* Soft shadow for depth */
-    border-radius: 15px; /* Rounded corners */
-    padding: 20px; /* Padding for spacing */
-        border: 1px solid rgba(255, 255, 255, 0.2);
-}
-
-.card:hover {
-    transform: translateY(-10px) rotateX(5deg) rotateY(5deg);
-    box-shadow: 
-        0 15px 35px rgba(0, 0, 0, 0.2),
-        0 0 25px rgba(0, 255, 255, 0.2),
-        0 0 50px rgba(0, 0, 255, 0.1);
-}
-
-/* Prismatic border effect */
-.card::before {
-    content: '';
-    position: absolute;
-    top: -2px;
-    left: -2px;
-    right: -2px;
-    bottom: -2px;
-    background: linear-gradient(45deg, 
-    rgb(108, 42, 108), #ff6f00, #a30cc8, #e53232, 
-        #c41fde, #83515b, #d516b6, #ff00c8, #ff0000);
-    z-index: -1;
-    animation: borderGlow 20s linear infinite;
-    background-size: 400%;
-    border-radius: 16px;
-    filter: blur(10px);
-    opacity: 0;
-    transition: opacity 0.3s ease-in-out;
-}
-
-.card:hover::before {
-    opacity: 1;
-}
-
-@keyframes borderGlow {
-    0% { background-position: 0 0; }
-    50% { background-position: 400% 0; }
-    100% { background-position: 0 0; }
-}
-
-/* Enhanced card header with glass morphism */
-.card-header {
-    background: rgba(255, 255, 255, 0.1);
-    background: rgba(255, 255, 255, 0.2); /* Semi-transparent background */
-    border: 1px solid rgba(255, 255, 255, 0.3); /* Subtle border */
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1); /* Soft shadow for depth */
-    border-radius: 15px; /* Rounded corners */
-    padding: 20px; /* Padding for spacing */    border-bottom: 1px solid rgba(255, 255, 255, 0.2);
-    transform-style: preserve-3d;
-}
-
-/* 3D Profile picture effect */
-.card-pic img {
-    transform-style: preserve-3d;
-    transition: transform 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
-}
-
-.card-pic img:hover {
-    transform: translateZ(20px) rotateY(360deg);
-    box-shadow: 
-        0 8px 25px rgba(0, 0, 0, 0.4),
-        0 0 20px rgba(0, 255, 255, 0.4);
-}
-
-/* Enhanced image container with parallax effect */
-.card-image {
-    overflow: hidden;
-    transform-style: preserve-3d;
-}
-
-.card-image img {
-    transition: transform 0.5s ease;
-    transform-origin: center center;
-}
-
-.card:hover .card-image img {
-    transform: scale(1.05) translateZ(10px);
-}
-
-/* Neon like button effect */
-.material-symbols-outlined {
-    text-shadow: 0 0 10px currentColor;
-    transition: all 0.3s ease;
-}
-
-.material-symbols-outlined:hover {
-    text-shadow: 
-        0 0 10px currentColor,
-        0 0 20px currentColor,
-        0 0 30px currentColor,
-        0 0 40px currentColor;
-    transform: scale(1.2) rotate(-10deg);
-}
-
-/* Enhanced like animation */
-@keyframes likeAnimationBurst {
-    0% {
-        transform: scale(1);
-        filter: hue-rotate(0deg);
-    }
-    50% {
-        transform: scale(1.5);
-        filter: hue-rotate(180deg);
-    }
-    100% {
-        transform: scale(1);
-        filter: hue-rotate(360deg);
-    }
-}
-
-/* Floating comments effect */
-.comm {
-    transform-style: preserve-3d;
-    transition: all 0.3s ease;
-    background: rgba(255, 255, 255, 0.05);
-    background: rgba(255, 255, 255, 0.2); /* Semi-transparent background */
-    border: 1px solid rgba(255, 255, 255, 0.3); /* Subtle border */
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1); /* Soft shadow for depth */
-    border-radius: 15px; /* Rounded corners */
-    padding: 20px; /* Padding for spacing */    border-radius: 10px;
-    border-left: 3px solid transparent;
-}
-
-.comm:hover {
-    transform: translateX(10px) translateZ(5px);
-    border-left: 3px solid #00ffff;
-    box-shadow: 
-        -5px 5px 20px rgba(0, 255, 255, 0.2),
-        0 0 15px rgba(0, 255, 255, 0.1);
-}
-
-/* Enhanced comment input */
-.add-comment input {
-    background: rgba(255, 255, 255, 0.1);
-    background: rgba(255, 255, 255, 0.2); /* Semi-transparent background */
-    border: 1px solid rgba(255, 255, 255, 0.3); /* Subtle border */
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1); /* Soft shadow for depth */
-    border-radius: 15px; /* Rounded corners */
-    padding: 20px; /* Padding for spacing */
-   border-radius: 20px;
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    transition: all 0.3s ease;
-}
-
-.add-comment input:focus {
-    background: rgba(255, 255, 255, 0.15);
-    box-shadow: 
-        0 0 20px rgba(0, 255, 255, 0.2),
-        0 0 40px rgba(0, 255, 255, 0.1);
-    transform: translateY(-2px);
-}
-
-/* Cyberpunk-style comment button */
-.comment {
-    position: relative;
-    background: linear-gradient(45deg, #00ffff, #00ff88);
-    border-radius: 20px;
-    overflow: hidden;
-    transition: all 0.3s ease;
-}
-
-.comment::before {
-    content: '';
-    position: absolute;
-    top: -50%;
-    left: -50%;
-    width: 200%;
-    height: 200%;
-    background: linear-gradient(
-        45deg,
-        transparent,
-        rgba(255, 255, 255, 0.1),
-        transparent
-    );
-    transform: rotate(45deg);
-    animation: shineEffect 3s infinite;
-}
-
-@keyframes shineEffect {
-    0% { transform: translateX(-100%) rotate(45deg); }
-    100% { transform: translateX(100%) rotate(45deg); }
-}
-
-/* Modal enhancement */
-.showComment {
-    background: rgba(255, 255, 255, 0.2); /* Semi-transparent background */
-    border: 1px solid rgba(255, 255, 255, 0.3); /* Subtle border */
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1); /* Soft shadow for depth */
-    border-radius: 15px; /* Rounded corners */
-    padding: 20px; /* Padding for spacing */    animation: modalAppear 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-}
-
-@keyframes modalAppear {
-    from {
-        opacity: 0;
-        transform: scale(0.8) translateY(50px);
-    }
-    to {
-        opacity: 1;
-        transform: scale(1) translateY(0);
-    }
-}
-
-.showComment .container {
-    background: rgba(255, 255, 255, 0.1);
-    background: rgba(255, 255, 255, 0.2); /* Semi-transparent background */
-    border: 1px solid rgba(255, 255, 255, 0.3); /* Subtle border */
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1); /* Soft shadow for depth */
-    border-radius: 15px; /* Rounded corners */
-    padding: 20px; /* Padding for spacing */
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    box-shadow: 
-        0 25px 50px rgba(0, 0, 0, 0.3),
-        0 0 30px rgba(0, 255, 255, 0.2);
-}
-
-/* Loading animation enhancement */
-.loading-spinner {
-    position: relative;
-}
-
-.loading-spinner::before,
-.loading-spinner::after {
-    content: '';
-    position: absolute;
-    top: -2px;
-    left: -2px;
-    right: -2px;
-    bottom: -2px;
-    border: 2px solid transparent;
-    border-radius: 50%;
-    animation: multiSpinner 2s linear infinite;
-}
-
-.loading-spinner::before {
-    border-top-color: #00ffff;
-    animation-delay: 0s;
-}
-
-.loading-spinner::after {
-    border-bottom-color: #ff00ff;
-    animation-delay: 1s;
-}
-
-@keyframes multiSpinner {
-    0% { transform: rotate(0deg); }
-    100% { transform: rotate(360deg); }
-}
-
-/* Global page transition */
-.home {
-    animation: pageTransition 1s ease-out;
-}
-
-@keyframes pageTransition {
-    0% {
-        opacity: 0;
-        transform: translateY(20px);
-    }
-    100% {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
-
-/* Text enhancement for better readability */
-.post-body {
-    line-height: 1.6;
-    color: #2c3e50;
-    text-shadow: 0 0 1px rgba(0, 0, 0, 0.1);
-    transition: all 0.3s ease;
-}
-
-.post-body:hover {
-    color: #34495e;
-    text-shadow: 0 0 2px rgba(0, 0, 0, 0.2);
-}
-
-/* Scroll animation for comment section */
-.comment-section {
-    scrollbar-width: thin;
-    scrollbar-color: rgba(0, 255, 255, 0.5) rgba(255, 255, 255, 0.1);
-}
-
-.comment-section::-webkit-scrollbar {
-    width: 6px;
-}
-
-.comment-section::-webkit-scrollbar-track {
-    background: rgba(255, 255, 255, 0.1);
-    border-radius: 3px;
-}
-
-.comment-section::-webkit-scrollbar-thumb {
-    background: linear-gradient(45deg, #00ffff, #00ff88);
-    border-radius: 3px;
-    box-shadow: 0 0 10px rgba(0, 255, 255, 0.2);
-}
-body.dark-mode {
-    background-color: #121212;
-    color: #ffffff;
-  }
-  
-  /* Dark mode card styles */
-  .dark-mode .card {
-    background: rgba(255, 255, 255, 0.05);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-  }
-  
-  /* Dark mode card header */
-  .dark-mode .card-header {
-    background: rgba(255, 255, 255, 0.1);
-    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-  }
-  
-  /* Dark mode text colors */
-  .dark-mode .card-header h5 a {
-    color: #ffffff;
-  }
-  
-  .dark-mode .post-body {
-    color: #e0e0e0;
-  }
-  
-  .dark-mode .likes-count {
-    color: #e0e0e0;
-  }
-  
-  /* Dark mode comment section */
-  .dark-mode .add-comment {
-    background: rgba(255, 255, 255, 0.05);
-    border-top: 1px solid rgba(255, 255, 255, 0.1);
-  }
-  
-  .dark-mode .add-comment input {
-    background: rgba(255, 255, 255, 0.1);
-    color: #ffffff;
-  }
-  
-  .dark-mode .add-comment input::placeholder {
-    color: rgba(255, 255, 255, 0.5);
-  }
-  
-  /* Dark mode comment modal */
-  .dark-mode .showComment .container {
-    background: #1a1a1a;
-  }
-  
-  .dark-mode .comment-section {
-    background: rgba(255, 255, 255, 0.05);
-  }
-  
-  .dark-mode .comm {
-    background: rgba(255, 255, 255, 0.1);
-  }
-  
-  /* Dark mode icons */
-  .dark-mode .material-symbols-outlined {
-    color: #ffffff;
-  }
-  
-  /* Dark mode links */
-  .dark-mode .commenter {
-    color: #4a9eff !important;
-  }
-  
-  .dark-mode .commentText {
-    color: #e0e0e0;
-  }
-  .emoji-picker {
-    position: absolute;
-    bottom: 100%;
-    left: 0;
-    background: white;
-    border: 1px solid #dbdbdb;
-    border-radius: 8px;
-    box-shadow: 0 0 5px rgba(0,0,0,0.1);
-    padding: 8px;
-    z-index: 1000;
-    width: 300px;
-    margin-bottom: 5px;
-  }
-  
-  .emoji-grid {
-    display: grid;
-    grid-template-columns: repeat(8, 1fr);
-    gap: 5px;
-  }
-  
-  .emoji-button {
-    background: none;
-    border: none;
-    cursor: pointer;
-    padding: 5px;
-    font-size: 20px;
-    transition: background-color 0.2s;
-    border-radius: 4px;
-  }
-  
-  .emoji-button:hover {
-    background-color: #f0f0f0;
-  }
   .card-header {
     display: flex;
-    justify-content: space-between;
     align-items: center;
-    padding: 15px;
+    padding: 10px;
+    position: relative;
   }
   
-  .card-header-left {
+  .card-header-info {
     display: flex;
     align-items: center;
-    gap: 10px;
+    justify-content: space-between;
+    flex: 1;
+  }
+  
+  .card-header-info h5 {
+    margin: 0;
   }
   
   .follow-button {
-    padding: 8px 20px;
-    border-radius: 4px;
-    border: none;
-    cursor: pointer;
-    font-weight: 600;
+    position: absolute;
+    right: 10px;
     background-color: #0095f6;
     color: white;
-    transition: background-color 0.2s ease;
+    border: none;
+    border-radius: 4px;
+    padding: 5px 10px;
+    font-weight: 600;
+    cursor: pointer;
+    font-size: 14px;
+    transition: background-color 0.2s;
   }
   
   .follow-button.following {
@@ -1068,9 +660,17 @@ body.dark-mode {
   }
   
   .follow-button:hover {
-    background-color: #0081d6;
+    background-color: #1877f2;
   }
   
   .follow-button.following:hover {
     background-color: #dbdbdb;
+  }
+  /* Home.css */
+.home.dark-mode .commentText {
+    color: #ffffff; /* White text in dark mode */
+  }
+  
+  .home.light-mode .commentText {
+    color: #000000; /* Black text in light mode */
   }

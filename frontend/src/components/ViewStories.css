@@ -1,0 +1,190 @@
+.view-stories-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: #000;
+    display: flex;
+    flex-direction: column;
+    z-index: 1000;
+  }
+  
+  .loading-spinner {
+    width: 50px;
+    height: 50px;
+    border: 3px solid rgba(255, 255, 255, 0.3);
+    border-radius: 50%;
+    border-top-color: #fff;
+    animation: spin 1s ease-in-out infinite;
+    margin: auto;
+  }
+  
+  @keyframes spin {
+    to { transform: rotate(360deg); }
+  }
+  
+  .no-stories {
+    color: #fff;
+    text-align: center;
+    margin: auto;
+  }
+  
+  .no-stories button {
+    background-color: #0095f6;
+    color: #fff;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 4px;
+    font-weight: 600;
+    margin-top: 16px;
+    cursor: pointer;
+  }
+  
+  .stories-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 16px;
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    z-index: 10;
+  }
+  
+  .stories-progress {
+    position: absolute;
+    top: 10px;
+    left: 0;
+    width: 100%;
+    display: flex;
+    gap: 4px;
+    padding: 0 16px;
+  }
+  
+  .progress-bar {
+    height: 3px;
+    background-color: rgba(255, 255, 255, 0.4);
+    flex: 1;
+    border-radius: 2px;
+    overflow: hidden;
+    position: relative;
+  }
+  
+  .progress-bar.active::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: 100%;
+    background-color: #fff;
+    animation: progress 5s linear forwards;
+  }
+  
+  .progress-bar.completed {
+    background-color: #fff;
+  }
+  
+  @keyframes progress {
+    0% { width: 0; }
+    100% { width: 100%; }
+  }
+  
+  .stories-user-info {
+    display: flex;
+    align-items: center;
+    margin-top: 16px;
+  }
+  
+  .stories-user-pic {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    border: 2px solid #fff;
+    object-fit: cover;
+    margin-right: 10px;
+  }
+  
+  .stories-username {
+    color: #fff;
+    font-weight: 600;
+    font-size: 14px;
+    margin: 0;
+  }
+  
+  .stories-time {
+    color: rgba(255, 255, 255, 0.8);
+    font-size: 12px;
+    margin: 0 0 0 10px;
+  }
+  
+  .stories-close-btn {
+    background: none;
+    border: none;
+    color: #fff;
+    font-size: 28px;
+    cursor: pointer;
+    padding: 0;
+    margin-top: 16px;
+  }
+  
+  .stories-content {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+  }
+  
+  .stories-media {
+    max-width: 100%;
+    max-height: 100vh;
+    object-fit: contain;
+  }
+  
+  .stories-text {
+    position: absolute;
+    width: 100%;
+    padding: 16px;
+    text-align: center;
+    color: #fff;
+    font-size: 18px;
+    font-weight: bold;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.8);
+  }
+  
+  .stories-text.top {
+    top: 80px;
+  }
+  
+  .stories-text.center {
+    top: 50%;
+    transform: translateY(-50%);
+  }
+  
+  .stories-text.bottom {
+    bottom: 80px;
+  }
+  
+  .stories-navigation {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+  }
+  
+  .nav-left, .nav-right {
+    flex: 1;
+    height: 100%;
+    cursor: pointer;
+  }
+  
+  @media (max-width: 768px) {
+    .stories-text {
+      font-size: 16px;
+    }
+  }

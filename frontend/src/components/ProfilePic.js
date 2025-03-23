@@ -21,7 +21,7 @@ export default function ProfilePic({ changeprofile }) {
   };
 
   const postPic = () => {
-    fetch("/uploadProfilePic", {
+    fetch("/api/uploadProfilePic", {
       method: "put",
       headers: {
         "Content-Type": "application/json",
@@ -44,7 +44,7 @@ export default function ProfilePic({ changeprofile }) {
   };
 
   const removePhoto = () => {
-    fetch("/removeProfilePic", {
+    fetch("/api/removeProfilePic", {
       method: "put",
       headers: {
         Authorization: "Bearer " + localStorage.getItem("jwt"),

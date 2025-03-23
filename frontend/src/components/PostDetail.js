@@ -1,12 +1,10 @@
-import React, { useState } from "react";
+import React from "react";
 import "./PostDetail.css";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
-import EmojiCommentInput from './EmojiCommentInput';
 
 export default function PostDetail({ item, toggleDetails }) {
   const navigate = useNavigate();
-  const [comment, setComment] = useState("");
 
   // Toast functions
   const notifyA = (msg) => toast.error(msg);
@@ -27,39 +25,6 @@ export default function PostDetail({ item, toggleDetails }) {
           navigate("/");
           notifyB(result.message);
         });
-    }
-  };
-
-  const makeComment = async (text, postId) => {
-    try {
-      if (!text?.trim()) {
-        notifyA("Comment cannot be empty");
-        return;
-      }
-
-      const response = await fetch("/comment", {
-        method: "put",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: "Bearer " + localStorage.getItem("jwt"),
-        },
-        body: JSON.stringify({
-          text: text,
-          postId: postId,
-        }),
-      });
-
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-
-      const result = await response.json();
-      notifyB("Comment posted successfully!");
-      setComment(""); // Clear the comment input
-      return result;
-    } catch (error) {
-      console.error("Error posting comment:", error);
-      notifyA("Failed to post comment");
     }
   };
 
@@ -99,7 +64,7 @@ export default function PostDetail({ item, toggleDetails }) {
           >
             {item.comments.map((comment) => {
               return (
-                <p className="comm" key={comment._id}>
+                <p className="comm">
                   <span className="commenter" style={{ fontWeight: "bolder" }}>
                     {comment.postedBy.name}{" "}
                   </span>
@@ -116,16 +81,25 @@ export default function PostDetail({ item, toggleDetails }) {
           </div>
 
           {/* add Comment */}
-          <div className="add-comment-wrapper" style={{ position: 'relative' }}>
-            <EmojiCommentInput 
-              value={comment}
-              onChange={setComment}
-              onSubmit={() => {
-                makeComment(comment, item._id);
-                toggleDetails();
-              }}
+          <div className="add-comment">
+            <span className="material-symbols-outlined">mood</span>
+            <input
+              type="text"
               placeholder="Add a comment"
+              //   value={comment}
+              //   onChange={(e) => {
+              //     setComment(e.target.value);
+              //   }}
             />
+            <button
+              className="comment"
+              //   onClick={() => {
+              //     makeComment(comment, item._id);
+              //     toggleComment();
+              //   }}
+            >
+              Post
+            </button>
           </div>
         </div>
       </div>

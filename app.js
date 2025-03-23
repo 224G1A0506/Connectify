@@ -9,7 +9,8 @@ require('dotenv').config();
 // Import models in correct order
 require('./models/model');  // USER model
 require('./models/post');   // Post model
-require('./models/message'); // Message model
+require('./models/message'); 
+require('./models/story');  // Story model
 
 // Get model references after all models are registered
 const Message = mongoose.model("Message");
@@ -42,132 +43,37 @@ app.use(express.static(path.join(__dirname, './frontend/build')));
 // Make io available in routes
 app.set('io', io);
 
-// Socket.IO connection handling
-const onlineUsers = new Map();
-
-io.on('connection', async (socket) => {
-  console.log('User connected:', socket.id);
-
-  // User comes online
-  socket.on('user_online', async (userId) => {
-    try {
-      // Verify user exists before marking them online
-      const user = await USER.findById(userId);
-      if (user) {
-        onlineUsers.set(userId, socket.id);
-        io.emit('user_status_change', {
-          userId: userId,
-          status: 'online'
-        });
-      }
-    } catch (error) {
-      console.error('Error in user_online:', error);
-    }
-  });
-
-  // Join private chat room
-  socket.on('join_chat', (chatRoom) => {
-    socket.join(chatRoom);
-    console.log(`User ${socket.id} joined room: ${chatRoom}`);
-  });
-
-  // Handle new messages
-  socket.on('send_message', async (messageData) => {
-    try {
-      const { senderId, receiverId, message } = messageData;
-      
-      // Verify both users exist
-      const [sender, receiver] = await Promise.all([
-        USER.findById(senderId),
-        USER.findById(receiverId)
-      ]);
-
-      if (!sender || !receiver) {
-        throw new Error('Invalid sender or receiver');
-      }
-
-      // Save message to database
-      const newMessage = new Message({
-        senderId,
-        receiverId,
-        message,
-        timestamp: new Date()
-      });
-      await newMessage.save();
-      
-      // Create unique room name and emit message
-      const chatRoom = [senderId, receiverId].sort().join('-');
-      io.to(chatRoom).emit('receive_message', newMessage);
-
-      // Send notification to receiver if they're online
-      const receiverSocketId = onlineUsers.get(receiverId);
-      if (receiverSocketId) {
-        io.to(receiverSocketId).emit('new_message_notification', {
-          senderId,
-          senderName: sender.name,
-          message: message.substring(0, 30) + (message.length > 30 ? '...' : '')
-        });
-      }
-    } catch (error) {
-      console.error('Error sending message:', error);
-      socket.emit('message_error', { error: 'Failed to send message' });
-    }
-  });
-
-  // Handle typing status
-  socket.on('typing_start', ({ senderId, receiverId }) => {
-    const chatRoom = [senderId, receiverId].sort().join('-');
-    socket.to(chatRoom).emit('typing_indicator', { userId: senderId, typing: true });
-  });
-
-  socket.on('typing_stop', ({ senderId, receiverId }) => {
-    const chatRoom = [senderId, receiverId].sort().join('-');
-    socket.to(chatRoom).emit('typing_indicator', { userId: senderId, typing: false });
-  });
-
-  // Handle read receipts
-  socket.on('mark_messages_read', async ({ senderId, receiverId }) => {
-    try {
-      const updateResult = await Message.updateMany(
-        { senderId, receiverId, isRead: false },
-        { $set: { isRead: true } }
-      );
-      
-      if (updateResult.modifiedCount > 0) {
-        const chatRoom = [senderId, receiverId].sort().join('-');
-        io.to(chatRoom).emit('messages_marked_read', { senderId, receiverId });
-      }
-    } catch (error) {
-      console.error('Error marking messages as read:', error);
-      socket.emit('message_error', { error: 'Failed to mark messages as read' });
-    }
-  });
-
-  // Handle disconnect
-  socket.on('disconnect', () => {
-    for (const [userId, socketId] of onlineUsers.entries()) {
-      if (socketId === socket.id) {
-        onlineUsers.delete(userId);
-        io.emit('user_status_change', {
-          userId: userId,
-          status: 'offline'
-        });
-        break;
-      }
-    }
-    console.log('User disconnected:', socket.id);
-  });
-});
+// Import the message module that now exports both router and socket handlers
+const messageModule = require('./routes/message');
 
 // API Routes
+app.use('/api/auth', require('./routes/auth'));
+app.use('/api', require('./routes/createPost'));
+app.use('/api', require('./routes/user'));
+app.use('/api', require('./routes/googleAuth')); // Keep this route mounted correctly
+app.use('/api/messages', messageModule.router); // Use the router from the message module
+app.use('/api', require('./routes/stories'));
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
-app.use(require('./routes/auth'));
-app.use(require('./routes/createPost'));
-app.use(require('./routes/user'));
-app.use(require('./routes/googleAuth'));
-app.use('/api/messages', require('./routes/message'));
+// Set up the message socket handlers
+messageModule.setupSocketHandlers(io);
 
+// Map the old routes to the new API routes for backward compatibility
+app.post('/signup', (req, res) => {
+  req.url = '/api/auth/signup';
+  app._router.handle(req, res);
+});
 
+app.post('/signin', (req, res) => {
+  req.url = '/api/auth/signin';
+  app._router.handle(req, res);
+});
+
+// Add backward compatibility route for Google Auth
+app.post('/google-auth', (req, res) => {
+  req.url = '/api/google-auth';
+  app._router.handle(req, res);
+});
 
 // Serve index.html for any unmatched routes
 app.get('*', (req, res) => {
